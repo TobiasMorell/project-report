@@ -1,0 +1,50 @@
+\input{preliminary/preamble.tex}% package inclusion and set up of the document
+\input{preliminary/hyphenations.tex}%
+\input{preliminary/macros.tex}% my new macros
+
+\begin{document}
+% Sætter vores listing environment til C# kode ordentligt op.
+\lstset{basicstyle=\tiny, tabsize = 2, xleftmargin = 5pt, keepspaces = true, numbersep = 5pt }
+%frontmatter
+
+\pagestyle{empty} %disable headers and footers
+\pagenumbering{roman} %use roman page numbering in the frontmatter
+\input{sections/00-setup/frontpage.tex}
+\input{sections/00-setup/colophon.tex}
+\input{sections/00-setup/titlepage.tex}
+\cleardoublepage
+\pdfbookmark[0]{Table of contents}{label:contents}
+\pagestyle{fancy} %enable headers and footers again
+\setcounter{tocdepth}{1}
+{
+    \setlength\parskip{0em}
+    \tableofcontents
+}
+\input{sections/00-setup/preface.tex}
+
+%mainmatter
+\pagenumbering{arabic} %use arabic page numbering in the mainmatter https://v2.overleaf.com/project/5b92343185248f122f26f36b
+\input{sections/00-setup/00-setup.tex}
+\input{sections/01-introduction/introduction.tex}
+\input{sections/02-state-of-the-art/state-of-the-art.tex}
+\input{sections/03-background-research/background-research.tex}
+\input{sections/04-benchmarking/benchmarking.tex}
+\input{sections/05-framework/framework.tex}
+\input{sections/06-discusion/discussion.tex}
+\input{sections/07-conclusion/conclusion.tex}
+\input{sections/08-future-work/future-work.tex}
+
+\addcontentsline{toc}{chapter}{Bibliography}
+\printbibliography
+
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Tables}
+\listoftables
+\addcontentsline{toc}{chapter}{List of Listings}
+\lstlistoflistings
+
+\appendix
+\input{sections/99-appendix/00-main.tex}
+
+\end{document}

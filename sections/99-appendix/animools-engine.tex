@@ -1,0 +1,66 @@
+\section{Animools Engine}
+\begin{lstlisting}[language=JavaScript,label={app:animools:engine}, caption={Animools "engine"}]
+const ast = animools.parse(code);
+const elements = { };
+
+const inbuiltActions = {
+
+    output: (sprite, msg) => new Promise(acc => {
+        const element = elements[sprite];
+        const dialog = document.createElement("span");
+        dialog.className = "dialog";
+        dialog.style.top = (element.style.top.replace("px", "") - 40) + "px";
+        dialog.style.left = element.style.left;
+        dialog.innerText = msg;
+        document.body.appendChild(dialog);
+        const delay = 500 + (msg.length * 45);
+        setTimeout(() => dialog.remove(), delay);
+        setTimeout(acc, delay / 2)
+    }),
+
+    moveSprite: (sprite, dest, time) => new Promise(acc => {
+        const element = elements[sprite];
+        element.style.transition = `top ${time}ms ease 0s, left ${time}ms ease 0s`;
+        element.style.top = dest.y + "px";
+        element.style.left = dest.x + "px";
+        setTimeout(acc, time);
+    }),
+
+    flip: (sprite) => {
+        const element = elements[sprite];
+    }
+};
+
+ast.forEach(astNode => {
+    switch (astNode.type) {
+        case 'animal':
+            const element = document.createElement("img");
+            element.src = `${astNode.name}.png`;
+            element.style.position = 'fixed';
+            element.style.top = astNode.pos.y + "px";
+            element.style.left = astNode.pos.x + "px";
+            element.style.height = astNode.size + "px";
+            element.style.width = astNode.size + "px";
+            elements[astNode.name] = element;
+            document.body.appendChild(element);
+            break;
+        case 'action':
+            switch (astNode.action) {
+                case 'click':
+                    const model = elements[astNode.sprite];
+                    console.log("click", astNode.func);
+                    model.onclick = async ev => {
+                        ev.cancelBubble = true;
+                        for (let f of astNode.func) {
+                            await inbuiltActions[f.handler](...f.arguments);
+                        }
+                    };
+                    break;
+            }
+            
+            break;
+    }
+});
+
+document.onclick = ev => console.log("(" + ev.clientX + ", " + ev.clientY + ")");
+\end{lstlisting}

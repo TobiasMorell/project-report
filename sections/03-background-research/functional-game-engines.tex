@@ -1,0 +1,70 @@
+\section{Functional Game Engines}
+Game development goes hand-in-hand with game engines. Thus it is natural to look for game engines that support the functional programming paradigm. This section presents three game frameworks that support functional languages; Helm \cite{helm:github}, Nu \cite{nu:github} and Arcadia \cite{arcadia:github}.
+
+\subsection{Helm}
+Helm is a game engine, written in and with support for Haskell \cite{helm:github,helm:wiki}. As such, Helm is purely functional. Helm uses the Elerea \ac{FRP} package along with a graphical framework called \ac{SDL} \cite{libsdl:about}. \ac{SDL} is written in C++, but is used with Haskell bindings in Helm.
+
+Helm presents two concepts, that they deem to be a \textit{"powerful paradigm shift for game development"} \cite{helm:wiki}. The first concept is \textit{subscriptions}, which is used to map from keyboard events to game action types. A game action type is Helm's abstraction of an in-game action, such as moving a character. The other concept is called \textit{commands}. The wiki describes commands as \textit{"IO-like monads that have context about the engine state"}. It also states that commands can be mapped to game actions.
+
+\subsection{Using Helm}
+There is currently a single public game that works with helm 1.0, to the best of our knowledge. That is the example game distributed with the engine, called \textit{Flappy}. Apart from Flappy, there also exist a handful of programs that work with the older 0.7 version (which are not compatible with 1.0). Furthermore the documentation is sparse in working examples, which makes it difficult to get started. The best bet is copying the only working example Flappy, which sums up to around 470 lines of both Engine- and Gameplay code.
+
+To become more familiar with the Helm engine we attempted to extend the Flappy example \cite{hs-helm-flabby-shooter:github}, that is distributed with Helm. The core of this change was to add a Subscription to a shoot button. This means we bind a Shooting function to the event triggered by pressing the "Z" key\btc{er sagt før}. This function is displayed in \lstref{haskell:shoot}. In addition, a function to check for collision between the bullet and the obstacles was also added, as the engine does not provide collision detection.
+
+\begin{lstlisting}[style=haskell-highlight,label={lst:haskell:shoot},caption={Haskell Shoot}]
+update model@Model { .. } Shoot =
+  if playerStatus == Dead || playerStatus == Waiting
+  then (model, Cmd.none)
+  else
+      if canFireBullet bulletPos flapperPos
+      then
+        ( model
+          { bulletPos   = flapperPos 
+          ,  playerStatus = Playing
+          }
+        , Cmd.none
+        )
+else (model, Cmd.none)
+\end{lstlisting}
+
+It turned out that crafting this small addition to the game boiled down to mere guesswork on how to do so. Part of the reason for this is that there is a very small community around Helm, a complete lack of useful examples and no documentation. We therefore choose to not examine Helm in further detail.
+
+\subsection{Nu}
+Nu is a 2D game engine written in F\# and C\#. It uses \ac{SDL} for rendering, Farseer for physics, Tiled\# for managing the game world and Gaia as game editor \cite{nu:github}. It is still under development and is currently missing support for 3D games, particle systems and AI.
+
+Unlike Haskell, F\# is not strictly pure. Bryan Edds, the developer of Nu, has made modifications to F\#'s type system, that makes it default to pure. Developers may still opt out of F\#'s purity and for instance declare mutable variables \cite{nu:pdf}. \btc{Interessant, men hvad med kode eksempler ?}
+
+\subsection{Arcadia}
+Arcadia takes a different approach to functional game development. Instead of providing a full-fledged game engine, they have integrated Clojure into \unityspace\cite{arcadia:github,arcadia:usage}. In order to do so they have written a native implementation of Clojure in Microsoft's \ac{CLR}\cite{arcadia:clr}. This implementation allows Clojure to run on the .NET \ac{VM} instead of its default \ac{JVM}.
+
+Clojure is primarily a pure functional language, but it allows the use of imperative constructs, for instance the \texttt{set!}-function\cite{arcadia:usage}. Furthermore\btc{Clojure's claim to fame is STM !!}, \unityspace is \textit{"a highly mutable, stateful system"}, with which argument the developers of Arcadia allow some functions to have side-effects. Their example is the \texttt{LookAt}-function in the \texttt{Camera}-class, which will mutate the camera's rotation to point it in the direction of the point, which is passed as argument to the function. Their argumentation of allowing this kind of behaviour is, that they wish to be conservative with imposing their own ideas on \unity's \ac{API}.
+
+\subsection{Using Arcadia}
+To use Arcadia, the game engine Unity has to be installed first. Then Arcadia is cloned using git into a Unity project \cite{arcadia-test:github}.
+From here, it's possible to use the \ac{REPL} to bind functions to \unity's triggers and events.
+To test Arcadia out, we attempted to create the same shooting function as with the Helm example, but to an otherwise empty game.
+
+\begin{lstlisting}[language=clojure,label={lst:clojure:shoot},caption={Arcadia Shoot}]
+(defn shoot []
+  (let [proj (instantiate
+               (Resources/Load "Projectile"))] 
+    (with-cmpt proj [tr Transform] 
+      (set! (.position tr) (.position (cmpt (get-player) UnityEngine.Transform)))
+      (roles+ proj
+              (-> projectile-roles
+                  (assoc-in [::lifespan :state :start] System.DateTime/Now)
+                  (assoc-in [::lifespan :state :lifespan] 5000)))
+      proj)))
+\end{lstlisting}
+
+The core of this functionality is binding a behaviour to a player-object, we call this behaviour \texttt{move-when-arrow-pressed}, which moves the player. In addition to moving the player, it also checks every frame, whether spacebar is pressed, in which case the shoot function is called. 
+This function is displayed in \lstref{clojure:shoot}.
+
+\begin{lstlisting}[language=clojure,label={lst:clojure:repl},caption={Arcadia Shoot}]
+(hook+ (get-player) :update #'minimal.mmo/move-when-arrow-pressed)
+\end{lstlisting}
+
+\texttt{move-when-arrow-pressed} should be called on every frame of the game.
+So it is bound to the player-object's update trigger.
+To bind the function to the player-object, we issue the command displayed in \lstref{clojure:repl} to the Arcadia REPL.
+Here, \texttt{minimal.mmo} is simply our namespace.

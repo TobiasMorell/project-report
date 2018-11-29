@@ -1,0 +1,25 @@
+\chapter{State of the Art} \label{chap:state-of-the-art}
+In this section we will discuss the current state of the art in game development with a programming perspective.
+
+Before we begin explaining the \ac{SotA} it is important to note that there are two types of game programming. The first one will be referred to as \textit{\dquote{Engine}} programming, which deals with tasks such as I/O, rendering and simulation \cite{blow2004game}. The other type is \textit{\dquote{Gameplay}} programming. Gameplay programming is used to define the rules and behaviour of the gameplay itself \cite{blow2004game}. In Unity3D the gameplay programming language is C\# and in Unreal it is C++. Other examples of gameplay languages exist, such as Lua \cite{lua:about,gamedev:lua} and GDScript for the Godot engine \cite{godot:gdscript}. Both of these types of development will be explored in greater detail later in this chapter (see \secref{gameplay:programming} and \secref{engine:programming}). The most common language in this category is C++. Sometimes these language types are interleaved, some places these are strictly separated.
+
+Many engine programmers make extensive use of \textit{\dquote{Meta}} programming. Game engines often support a number of platforms \cite{BinSubaih2007ASO}. Therefore certain platform-specific retooling is necessary when building the engine. This is achieved using macros, in C and C++, or another kind of meta programming. Meta programming changes the content of the source code based on some parameters that can be set at build time, thus platform-specific code can be injected only when building for that platform.
+
+When application code and core code is made to have a clear separation, like between the gameplay code and engine code, it is a data-driven architecture, which game development makes extensive use of. Data-driven development is an architecture in which you divide core component code from application code. So the core would be the game engine, and the application would be the different games that is made. In general this gives some advantages, like being able to have more reusable code, having a core system that rarely change and when it does, it is between applications. It also gives better abstraction level, having a clear division between what is application logic, and what is the core code base.
+
+Data-driven development has not always been used in game development, as \figureref{game-dev-history} shows, there has been quite some change. In the early days of game development, games were hardwired into circuits, this was done around the 1940s all the way up to the 1970s \cite{cathod-hardwire}. These games had quite a simple game logic. With the advancements in computer technology, game development moved from implementing games in wires to building hard coded games, where the engine and gameplay code was not separated. This change made games easier to modify \cite{graetz1981origin}. These games were also often of simple game logic, and had to bypass operating systems, to get added speed. Later came game-independent game engines, these were introduced because of the increase in development cost, they made it possible to reuse code, making it possible to make multiple games in the same engine.
+
+Games also became more complex, as more specialised components were introduced, such as Artificial Intelligence and Physics \cite{sherrod2006ultimate}.  One of the bigger issues with this model is that games are dependent on game engines. The reason for this is that the games make use of specific components, that are provided by the game engine. Research into the possibility of developing games independent of game engines, such that games can easily can be ported between game engines \cite{BinSubaih2007ASO}. This can improve the use of multiple game engines, such that the focus is on the game logic creation and a game engine is just a package of specific libraries that can be used, depending on the target platform for the game. Some of the concerns with this idea is the performance and implementation overhead that the generality may incur \cite{BinSubaih2007ASO}. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\textwidth]{images/Game-development/Game-dev-history.png} 
+    \caption{A overview of the evolution of game development \cite{BinSubaih2007ASO}.}
+    \label{fig:game-dev-history}
+\end{figure}
+
+\input{sections/02-state-of-the-art/game-dev.tex}
+\input{sections/02-state-of-the-art/functional-programming.tex}
+\input{sections/02-state-of-the-art/meta-programmering.tex}
+\input{sections/02-state-of-the-art/staged-programming.tex}
+\input{sections/02-state-of-the-art/lang-survey.tex}

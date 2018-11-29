@@ -1,0 +1,162 @@
+\section{Staged Programming}
+In this section staged programming is discussed. Some staged programming technologies are also explored. Staged programming comes in many forms ranging from C++ Templates\footnote{Note that while C++ Templates, are meta programming, they are technically not staged programming. But we believe that they make a good example anyway.} \cite{c++:templates} to MetaML \cite{sheard1998using}. Other initiatives have also attempted to implement staged programming in other languages, such as Haskell \cite{sheard2002template}.
+
+The goal of staged programming is to create languages that provide constructs that efficiently and concisely express common functionality and impose little to no overhead in computation time. There are also other approaches that pursue similar goals, such as Scrap Your Boilerplate \cite{lammel2003scrap} or Lightweight Modular Staging \cite{rompf2010lightweight}.
+
+\subsection{C++ Templates}
+C++ Templates allow the programmer to implement functions that operate on generic parameters, i.e. write functions that work on a broad range of different parameters \cite{c++:templates:tutorial}. Though not always classified as staged programming, it still has the same flavour and will suffice in this discussion.
+\lstref{c++:max:template} shows an implementation of a \ttt{Max}-template, which returns the greater of two arguments. This template can operate on any types where the greater than operator (\textgreater) is implemented. In this concrete example, the template accepts two arguments of the same generic type. If the programmer wishes to implement a template with two or more different generic types, he/she would need to add the types to the template constructor (\ttt{template \textless class T, class U\textgreater} for a template with two generic types).
+
+\begin{lstlisting}[label={lst:c++:max:template}, caption={\ttt{Max}-function template in C++}]
+template <class T>
+T Max (T a, T b) {
+  T result;
+  result = a > b  ? a : b;
+  return (result);
+}
+\end{lstlisting}
+
+When a template is instantiated in the surrounding code (for instance \ttt{Max\textless int\textgreater (10, 20)}), the compiler generates a concrete implementation for the given type. In other words, the compiler will generate three implementations if the template is called with the three different types \ttt{int}, \ttt{long} and \ttt{float}. This means that the C++ compiler works in at least two stages; one that generates concrete code from templates and one that compiles the generated code to an executable.
+
+Templates can also be specialised to provide different implementations in case of certain generic types. This is useful, but it will not be discussed here, as it is does not require additional stages beyond those already discussed.
+
+\subsection{C/C++ Macros}
+Both the \ac{GCC} has a pre-processor that supports the definition of macros \cite{c:macros}. There are two types of macros; object-like \cite{c:macros:object} and function-like \cite{c:macros:function}. Object-like macros are often used to give symbolic names to numeric constants. An example of an object-like macro is given in \lstref{c:object:macro}. When the pre-processor encounters \ttt{PI} in the code it will be replaced by the number \ttt{3.14159}. The comment after the line shows what the code looks like after the pre-processor has been run.
+\begin{lstlisting}[label={lst:c:object:macro}, caption={C/C++ object-like macro}, style={C}]
+#define PI 3.14159
+
+int main(int argc, char *argv[]) {
+    //Use macro in buffer allocation
+    int a = 2 * PI; /*int a = 2 * 3.14159; */
+}
+\end{lstlisting}
+Function-like macros look like function calls. \lstref{c:function:macro} shows an example of a function-like macro. They are defined in the same way as object-like macros, except that an opening parenthesis must follow directly after the macro's name (no white-space is allowed). As was the case with object-like macros, the pre-processor will replace \ttt{MIN} and its arguments with the expression listed after the definition (see the comment in the listing).
+\begin{lstlisting}[label={lst:c:function:macro}, caption={C/C++ function-like macro}, style={C}]
+#define MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
+
+int main(int argc, char *argv[]) {
+    int a = 10, b = 12;
+    int min = MIN(a,b); /*int min = ((a) < (b) ? (a) : (b))*/
+}
+\end{lstlisting}
+
+According to a StackOverflow discussion \cite{so:c:macros} macros are particularly useful to optimise code (by inlining function calls) and to configure behaviour, that may change in different situations. In order to do so the \ttt{\#ifdef}-construct is used. It may for instance be used to configure logging or different platforms. In another StackOverflow discussion \cite{so:c:macros:evil}, a user highlights some of the dangers of using macros:
+\begin{enumerate}
+    \item Macros cannot be debugged, as most debuggers are not able to see the macros, due to them being in action after pre-processing
+    \item Macro expansion may lead to unexpected side effects
+    \item Macros do not have a namespace, macro definition will override any previously defined macros
+    \item Macros may unknowingly affect variables
+\end{enumerate}
+The easiest way to demonstrate these dangers are with concrete examples. \lstref{c:macros:dangers} lists three functions that each showcase the last three of these dangers. In all cases the errors are in form of bugs, but the author of the comment argues that if the macros are defined in another header-file (maybe in a library) the bugs can be notoriously hard to find.
+\begin{lstlisting}[label={lst:c:macros:dangers}, caption={Dangers of using macros as argued by \cite{so:c:macros:evil}}, style={C}]
+#define MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
+
+int unexpected_side_effect() {
+    int a = 12, b = 12;
+    int min = MIN(a++,b); /*int min = ((a++) < (b) ? (a++) : (b))*/
+    printf("%d\n", min); /*Outputs 14*/
+}
+
+//Assume the following definition is in another header file
+#define start() (x = 0)
+int no_namespace() {
+    //Assume we have a game we want to start
+    Game g = new Game();
+    g.start(); /*g.(x = 0), really strange errors will show up*/
+}
+
+int affect_variables() {
+    int x = 10;
+    start();
+    
+    for(int i = 0; i < x; i++) {
+        printf("this never happens\n");
+    }
+}
+\end{lstlisting}
+
+Our research failed to find any literature on whether or not macros are used in gameplay- or engine-programming. In order to examine the use of macros we examine Unreal Engine because it's very popular, it is open source and written in C++.
+
+We decided to examine three open source game engine; Epic Games' Unreal Engine\footnote{Unreal Engine Github repository: \url{https://github.com/EpicGames/UnrealEngine}}, Godot\footnote{Godot Github repository: \url{http://google.com}} and Amazon's Lumberyard\footnote{Lumberyard Github repository: \url{http://google.com}}.
+
+In each of the three Github repositories, we isolated the engine code (all three come with an editor as well). We wrote a small program in C\# that searches for all files with the extensions .c, .cpp, .h or .hpp. In these files we counted the number of \ttt{\#define}s, \ttt{\#ifdef}s and \ttt{\#if}s. The program is listed in \appendixref{unreal:macros}
+
+\tableref{macros:in:ges} lists the number of lines of source code in each engine along with the number of macros. These results indicate that macros are in fact being used in game engine development (though not broadly applicable due to the limited data set). From the qualitative point-of-view, we briefly examined what the macros are used for in Unreal Engine and observed that they were used to configure logging, along with build- and platform-specific behaviour (see \lstref{unreal:macro}).
+\makeTable{{|l|c|c|c|c|}
+    \hline
+    \textbf{Engine} & \textbf{LoC} & \textbf{\ttt{\#define}s} & \textbf{\ttt{\#ifdef}s} & \textbf{\ttt{\#if}s}  \\
+    Unreal Engine   & 15,027,722    & 350,300 & 51,945  & 171,914 \\
+    Godot           & 1,590,009     & 25,809  & 6323    & 18,285 \\
+    Lumberyard      & 2,345,289     & 28,885  & 3360    & 16,403 \\
+    \hline}{Macro usage in open source game engines}{macros:in:ges}
+
+\begin{lstlisting}[label={lst:unreal:macro}, caption={A macro found in ModuleManager.h in Unreal Engine}, language={C}]
+#if PLATFORM_DESKTOP
+	#ifdef UE_ENGINE_DIRECTORY
+		#define IMPLEMENT_FOREIGN_ENGINE_DIR() const TCHAR *GForeignEngineDir = 
+		    TEXT( UE_ENGINE_DIRECTORY );
+	#else
+		#define IMPLEMENT_FOREIGN_ENGINE_DIR() const TCHAR *GForeignEngineDir = nullptr;
+	#endif
+#else
+	#define IMPLEMENT_FOREIGN_ENGINE_DIR() 
+#endif
+\end{lstlisting}
+
+\subsection{MetaML}
+MetaML is a programming language in the ML-family. MetaML was designed with the goal of allowing the programmer to specify the order of computation, as the authors argue that no single fixed evaluation order is superior in every case. They use a \ttt{power} function as an example, specialised to the square function, by mapping a lambda-function over a list (see \lstref{metaml:example}). As \ttt{power} is applied inside a lambda-function, no unfolding will occur before the lambda is invoked. The optimal strategy in this case would be to unfold the lambda-function once to the lambda \ttt{fn x => x * x} and invoke it afterwards.
+\begin{lstlisting}[label={lst:metaml:example}, caption={MetaML squaring a list with a power-function}]
+fun power m = (fn x => if x = 0 then 1 else x * (power (n-1) x))
+
+map (power 2) [1,2,3,4,5]
+\end{lstlisting}
+
+This unfolding can be achieved by annotating the code with programmer knowledge. The annotation uses three different symbols in MetaML:
+\begin{labeling}{\quad\quad}
+    \item[\ttt{\textless\textgreater}] Surrounds expressions and indicates that reduction should \textit{not} occur within the brackets.
+    \item[\ttt{\textasciitilde}] Relaxes the requirement imposed by \textless\textgreater and indicates that the expression within may actually be reduced. It can be used to splice together two pieces of code.
+    \item[\ttt{run}] Is used to remove the outermost brackets of an expression and forcing its evaluation. Only an expression in which no inner brackets occur may be \ttt{run}.
+\end{labeling}
+
+\lstref{metaml:annotation} shows how the power-function and its application should be annotated to support reduction. The following shows the initial steps in the unfolding.
+\begin{lstlisting}[label={lst:metaml:annotation}, caption={MetaML annotations}]
+fun power m = fn x => if x = 0
+    then <1>
+    else < ~x * ~(power (n-1) x)>
+
+    map (run <fn z => ~(power 2 <z>)>) [1,2,3,4,5]
+\end{lstlisting}
+Unfold the application of \ttt{power} once:
+\begin{verbatim}
+    map (run <fn z => ~(if 2=0 
+        then <1> 
+        else < ~<z> * ~(power (2-1) <z>)>) [1,2,3,4,5]
+\end{verbatim}
+As $2=0$ is always false, we may reduce the if-else statement by removing the if-part:
+\begin{verbatim}
+    map (run <fn z => ~< ~<z> * ~(power (2-1) <z>)>>)
+        [1,2,3,4,5]
+\end{verbatim}
+We unfold the application of \ttt{power (2-1)} again:
+\begin{verbatim}
+    map (run <fn z => ~< ~<z> * ~(if 1=0 then <1>
+        else < ~<z> * ~(power (1-1) <z>) <) >>) [1,2,3,4,5]
+\end{verbatim}
+
+The if-part of the if-statement can once again be removed, as it is always false. This process may be repeated until the expression listed in \lstref{metaml:final} is obtained.
+\begin{lstlisting}[label={lst:metaml:final}, caption={MetaML \ttt{power}-function after unfolding}]
+map (fn z => z * z * 1) [1,2,3,4,5]
+\end{lstlisting}
+
+In this small example the rewriting is rather trivial. As the code size grows and increases in complexity, programmers might want to stage less trivial pieces of program code that are unsuitable for rewriting by hand. 
+
+This type of staged programming is a large theoretical topic, but the annotations presented by this approach adds yet another layer of complexity to the programs. As we have seen, in the gaming industry the game logic is often implemented by artists and designers. We therefore find it safe to argue that this type of staged programming complicates matters too much.
+
+\subsection{Haskell Templates}
+In \cite{sheard2002template} the authors implement a Haskell template framework, which is somewhat similar to C++'s. It is implemented as an extension to \ac{GHC}. Unlike the staged programming scheme used in MetaML, Haskell Templates only operate on two levels; compile-time and run-time. Haskell templates use quasi-quotation (\ttt{[| code |]}) to indicate to the compiler that it should run the code in-between the quotation marks at compile-time. Unlike C++'s template system, the templates are actually written in Haskell. This also means that there is a risk of infinite recursion in the compile-time code. The authors classify this as a programming mistake just like any other.
+
+The goal of the extension is to allow the programmer to \textit{"teach the compiler new tricks"}. Their most prominent example is that of extracting variables from sets in Haskell. They highlight that the constituents of a pair can be extracted by \ttt{fst} and \ttt{snd}, but that no similar function exists for triples. They wish to implement a function, \ttt{(sel n m) x}, which extracts the \ttt{n}th element from a list, \ttt{x}, of size \ttt{m}. Such constructs can be implemented in the template framework by defining a series of meta-functions, that takes outputs Haskell code. The function to solve aforementioned problem therefore has a signature of \ttt{sel :: Int -\textgreater Int -\textgreater Expr}, i.e. it takes two integers as input and outputs an expression. The exact implementation of the function can be found in \cite{sheard2002template} and will not be discussed here, suffice it to say that it is a Haskell extension that can convert Haskell code into Haskell code and make self-augmenting programs - one of the goals of staged programming.
+
+\subsection{Reflection \& Introspection}
+Reflection in the software context is the ability for a program to inspect and modify its own structure and behaviour at runtime. Reflection is often used in Android applications \cite{malte2017static} to load code and classes from the web at runtime, which is easy since the Java standard library has functions facilitating this sort of behaviour. Reflection is a powerful ability as everything about a program can be changed at runtime, but this also makes it harder to verify that the behaviour is correct, since it depends on whether reflection is used and how it is used. Reflection is avoided in certain use-cases due to poor performance \cite{java:refl, csharp:refl}.
+ 

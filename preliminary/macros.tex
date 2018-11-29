@@ -1,0 +1,220 @@
+% see, e.g., http://en.wikibooks.org/wiki/LaTeX/Customizing_LaTeX#New_commands
+% for more information on how to create macros
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macros for the titlepage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Creates the aau titlepage
+\newcommand{\aautitlepage}[3]{%
+  {
+    %set up various length
+    \ifx\titlepageleftcolumnwidth\undefined
+      \newlength{\titlepageleftcolumnwidth}
+      \newlength{\titlepagerightcolumnwidth}
+    \fi
+    \setlength{\titlepageleftcolumnwidth}{0.5\textwidth-\tabcolsep}
+    \setlength{\titlepagerightcolumnwidth}{\textwidth-2\tabcolsep-\titlepageleftcolumnwidth}
+    %create title page
+    \thispagestyle{empty}
+    \noindent%
+    \begin{tabular}{@{}ll@{}}
+      \parbox{\titlepageleftcolumnwidth}{
+        \iflanguage{danish}{%
+          \includegraphics[width=\titlepageleftcolumnwidth]{images/aau-logo-da}
+        }{%
+          \includegraphics[width=\titlepageleftcolumnwidth]{images/aau-logo-en}
+        }
+      } &
+      \parbox{\titlepagerightcolumnwidth}{\raggedleft\sf\small
+        #2
+      }\bigskip\\
+       #1 &
+      \parbox[t]{\titlepagerightcolumnwidth}{%
+      \textbf{Abstract:}\bigskip\par
+        \fbox{\parbox{\titlepagerightcolumnwidth-2\fboxsep-2\fboxrule}{%
+          #3
+        }}
+      }\\
+    \end{tabular}
+    \vfill
+    \iflanguage{danish}{%
+      \noindent{\footnotesize\emph{Rapportens indhold er frit tilgængeligt, men offentliggørelse (med kildeangivelse) må kun ske efter aftale med forfatterne.}}
+    }{%
+      \noindent{\footnotesize\emph{The content of this report is freely available, but publication (with reference) may only be pursued due to agreement with the author.}}
+    }
+    \clearpage
+  }
+}
+
+%Create english project info
+\newcommand{\englishprojectinfo}[8]{%
+  \parbox[t]{\titlepageleftcolumnwidth}{
+    \textbf{Title:}\\ #1\bigskip\par
+    \textbf{Theme:}\\ #2\bigskip\par
+    \textbf{Project Period:}\\ #3\bigskip\par
+    \textbf{Project Group:}\\ #4\bigskip\par
+    \textbf{Participant(s):}\\ #5\bigskip\par
+    \textbf{Supervisor(s):}\\ #6\bigskip\par
+    \textbf{Copies:} #7\bigskip\par
+    \textbf{Page Numbers:} \pageref{LastPage}\bigskip\par
+    \textbf{Date of Completion:}\\ #8
+  }
+}
+
+%Create danish project info
+\newcommand{\danishprojectinfo}[8]{%
+  \parbox[t]{\titlepageleftcolumnwidth}{
+    \textbf{Titel:}\\ #1\bigskip\par
+    \textbf{Tema:}\\ #2\bigskip\par
+    \textbf{Projektperiode:}\\ #3\bigskip\par
+    \textbf{Projektgruppe:}\\ #4\bigskip\par
+    \textbf{Deltagere:}\\ #5\bigskip\par
+    \textbf{Vejleder:}\\ #6\bigskip\par
+    \textbf{Oplagstal:} #7\bigskip\par
+    \textbf{Sidetal:} \pageref{LastPage}\bigskip\par
+    \textbf{Afleveringsdato:}\\ #8
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% An example environment
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremheaderfont{\normalfont\bfseries}
+\theorembodyfont{\normalfont}
+\theoremstyle{break}
+\def\theoremframecommand{{\color{aaublue!50}\vrule width 5pt \hspace{5pt}}}
+\newshadedtheorem{exa}{Example}[chapter]
+\newenvironment{example}[1]{%
+		\begin{exa}[#1]
+}{%
+		\end{exa}
+}
+
+% Table macro.
+% 1: Table Latex
+% 2: Caption
+% 3: Label
+\definecolor{lightgray}{gray}{0.9}
+\newcommand{\makeTable}[3]{
+    \rowcolors{1}{}{lightgray}
+    \begin{table}[H]
+        \makebox[\textwidth][c]{
+        \begin{tabular}
+            #1
+        \end{tabular}}
+        \caption{#2}
+        \label{tab:#3}
+    \end{table}
+    \rowcolors{0}{}{}
+}
+
+% Table macro.
+% 1: Table Latex
+% 2: Caption
+% 3: Label
+\newcommand{\makeTablePB}[3]{
+    \centering
+    \rowcolors{1}{}{lightgray}
+    \begin{longtable}
+        #1
+        \caption{#2}
+        \label{table:#3}
+    \end{longtable}
+    \rowcolors{0}{}{}
+}
+
+\newcommand{\tableref}[1]{Table \ref{tab:#1}}
+\newcommand{\figureref}[1]{Figure \ref{fig:#1}}
+\newcommand{\figref}[1]{Figure \ref{fig:#1}}
+\newcommand{\coderef}[1]{Code \ref{code:#1}}
+\newcommand{\lstref}[1]{Listing \ref{lst:#1}}
+\newcommand{\secref}[1]{Section \ref{sec:#1}}
+\newcommand{\chapref}[1]{Chapter \ref{chap:#1}}
+\newcommand{\appendixref}[1]{Appendix \ref{app:#1}}
+\newcommand{\lineref}[1]{Line \ref{line:#1}}
+
+%\newcommand{\acrfull}[1]{\acrlong{#1} (\acrshort{#1})}
+
+\newcommand{\dquote}[1]{``{#1}''}
+\newcommand{\squote}[1]{`{#1}'}
+
+\newcommand{\quoteWithCite}[3]{
+  \begin{quotation}
+  \noindent \textit{"#1"}
+  \begin{flushright}
+    -#2 \cite{#3}
+  \end{flushright}
+  \end{quotation}
+}
+
+\newcommand{\quoteWithoutCite}[2]{
+  \begin{quotation}
+  \noindent \textit{"#1"}
+  \begin{flushright}
+  -#2
+  \end{flushright}
+  \end{quotation}
+}
+
+\newcommand{\dvanbo}{\color{pink}}
+\newcommand{\tmc}[1]{\todo[color=pink!80]{#1}}
+\newcommand{\btc}[1]{\todo[color=red!75]{#1}}
+\newcommand{\needcite}{\todo{Citation needed}}
+\newcommand{\inline}[1]{\todo[inline]{#1}}
+\newcommand{\ttt}[1]{\texttt{#1}}
+\newcommand{\unity}{Unity}
+\newcommand{\unityspace}{Unity }
+\newcommand{\unreal}{Unreal Engine}
+\newcommand{\unrealspace}{Unreal Engine }
+\newcommand{\cryengine}{CryEngine}
+\newcommand{\cryenginespace}{CryEngine }
+
+%%%%%%%% Column types
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\newcommand{\benchmarkRes}[2]{
+\begin{figure}[H]
+    \makebox[\textwidth][c]{
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar=0pt,
+            label style={font=\bfseries},
+            ylabel={Logarithmic Run Time (ns)},
+            bar shift=0pt,
+            width=1\textwidth,
+            height=8cm,
+            bar width=16pt,
+            ymode=log,
+            xtick=data,
+            log basis y={2},
+            ymajorgrids,
+            xticklabel style={rotate=45, anchor=east},
+            symbolic x coords={,
+                Cry CSharp (Editor),
+                Cry C++ (Editor),
+                Cry C++ (Standalone),
+                Dotnet CSharp (debug),
+                Dotnet CSharp (release),
+                Godot CSharp (editor),
+                Godot CSharp (release),
+                Mono CSharp (debug),
+                Mono CSharp (release),
+                Unity CSharp (editor),
+                Unity CSharp (release),
+                Unreal C++ (editor),
+                VisualC++ (debug),
+                VisualC++ (release),
+                WSL C++ (debug),
+                WSL C++ (release),
+                Arcadia},
+        ]
+            \addplot table [x=Engine, y={#1}] {\graphData};
+        \end{axis}
+    \end{tikzpicture}}
+    \caption{#1 Test Results}
+    \label{fig:#2}
+\end{figure}
+}

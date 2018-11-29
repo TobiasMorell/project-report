@@ -1,0 +1,81 @@
+\section{Functional Programming} \label{sec:functional-programming} \todo{Is this better?}
+In this section functional programming and it's central concepts are explored. An important distinction to keep in mind is the difference between a functional programming language and the discipline of functional programming. Functional programming languages such as, Haskell, Scheme or Standard ML are languages developed specifically for functional programming (the discipline). The discipline, however, is a paradigmatic methodology \cite{benton2016improving}.
+
+Multi-paradigm programming languages such as C\#, Java or JavaScript support functional programming. The distinguishing features of functional programming are \cite{hudak1989conception}:
+\begin{itemize}
+    \item Higher order functions
+    \item Lazy evaluation (Non-strict semantics)
+    \item Data abstraction
+    \item Equations and pattern matching
+\end{itemize}
+
+However, functional languages are made up of more components that provide additional expressive power and support. Some of these linguistic features are explained in the following sections.
+
+\subsection{Higher Order Functions}
+In the programming language C, functions cannot directly be passed as arguments to other functions\footnote{In C you can make a pointer to a function and pass that to a function.}. This means that functions are not first class. First-class functions is a linguistic feature that eases the use of higher order functions, which are functions that operate on other functions.
+
+However, this feature can be useful in functional, as well as general, programming. Such functions are called higher order functions if they meet all of the following conditions:
+\begin{itemize}
+    \item Can be stored in a data structure
+    \item Can be passed as arguments
+    \item Can be returned as a result
+\end{itemize}
+Higher order functions can facilitate greater code reuse and modularity via function composition \cite{hughes1989functional}. An example of this is the general case function \ttt{map}, which takes a collection and a function. The function is then applied across the entire collection. This means that the supplied function is called once for each element of the collection, with the element as argument. The returned value is a collection of the return values from each of the functions calls.
+
+\begin{lstlisting}[language=haskell, caption={Higher Order Functions in Haskell}, label={lst:haskell-map}]
+    list = [1, 2, 3, 4, 5]
+    increment n = n + 1
+    
+    map increment list
+\end{lstlisting}
+
+An example of \ttt{map} implemented in Haskell can be seen in \lstref{haskell-map}. The first line defines a list of five numbers, which is supplied to \ttt{map} on line 4. In addition to the list a function is has to be passed, which will be called by \ttt{map}. This function is defined on line two and it takes a number and increments it. The result of the map call on line 4 is \ttt{[2, 3, 4, 5, 6]}.
+
+\subsection{Lazy Evaluation (Non-strict semantics)}
+Non-strict semantics or lazy evaluation is an evaluation strategy. Programming languages such as C use eager evaluation, which means that commands are executed immediately and therefore evaluation order becomes the responsibility of the programmer. The advantage of lazy evaluation is that evaluation order is no longer the responsibility of the programmer. This allows for computation using infinite lists \cite{hudak1989conception}. Some of the advantages include:
+\begin{itemize}
+    \item Freeing the programmer from concerns about evaluation order
+    \item Allowing for computation with unbounded infinite lists
+\end{itemize}
+
+Freeing the programmer from handling evaluation order means that evaluation can be postponed until it is absolutely necessary \cite{hudak1989conception}. This means that unused function calls written in the program, which are not need at runtime, are not called.
+
+This enables the language to manage infinite lists in practice. Consider a list of all prime numbers, the list is not stored in memory, but rather calculated as necessary. Such a list is called a stream. If a stream is implemented in a language without lazy evaluation, the program would never finish calculating it, but due to lazy evaluation only the necessary elements are computed \cite{hughes1989functional}.
+
+This very property results in a side effect. Lazy evaluation may prevent a thread from returning anything useful. This is because lazy evaluation means that results are only returned if they are needed and this need is difficult to translate across threads \cite{trinder1998algorithm+}. Therefore, in languages with lazy evaluation, parallelism is usually handled using eager evaluation \cite{o2008real}. \btc{Kunne måske udvides med noget om lazy eval in C\# using yield return ..}
+
+\subsection{Monads}
+Monads can be described as a design pattern for types \cite{lippert-blog:monad}. The pattern is used to encapsulate code such as functions, inputs, outputs and other operations. Monads come from category theory \cite{mac2013categories}, but are also used in functional programming. Monads are formally defined by a Kleisli triple, which consists of the following \cite{wadler1992essence}:
+\begin{center}
+\begin{tabular}{l l}
+    A type constructor & \ttt{M t} \\
+    A unit function & \ttt{t $\rightarrow$ M t} \\
+    A binding operation & \ttt{M t $\rightarrow$ (t $\rightarrow$ M u) $\rightarrow$ M u}
+\end{tabular}    
+\end{center}
+The type constructor defines how to obtain the type of the monad. In Haskell, if \ttt{M} is the monadic type and \ttt{t} is the data type, then the type constructor is \ttt{M t}. The unit function injects a value in the data type into the monadic type. In Haskell: \ttt{t $\rightarrow$ M t}. Finally the binding operation is a function with the type \ttt{M t $\rightarrow$ (t $\rightarrow$ M u) $\rightarrow$ M u}. This function takes a monadic type and binds it to another monadic type. This is achieved by using the type constructor of the first monad and the unit function of the second monad. This results in a monad of the second type.
+
+In order to ensure monad behaviour, it is restricted by the monad laws \cite{haskell-wiki:monad-laws}:
+\begin{enumerate}
+{\footnotesize
+    \item \ttt{\textbf{do} { x <- return v; f x } $\equiv$ \textbf{do} { f v }}
+    \item \ttt{\textbf{do} { x <- m; return x } $\equiv$ \textbf{do} { m }}
+    \item \ttt{\textbf{do} { y <- \textbf{do} { x <- m; f x }; g y } $\equiv$ \textbf{do} { x <- m; y <- f x; g y }}
+}
+\end{enumerate}
+
+These laws ensure that the monad behaves in accordance with the Kleisli triple. \btc{Hvad skal I bruge dette afsnit til?}
+
+\subsection{Pure Functions \& Immutability}
+In functional programming, functions are divided into two classes: pure and impure. In some cases, such as Haskell, impure functions are disallowed, however many functional languages allow impure functions. In imperative languages impure functions are commonly used. The definition of a pure functions is the following:
+
+\quoteWithCite{A pure function is a function that, given the same input, will always return the same output and does not have any observable side effect.}{Professor Frisby}{frisby-mostly-adequate:guide-to-functional-programming} 
+
+The main argument for disallowing impure functions is that reliance on state contributes to system complexity. \cite{moseley2006out}. Another important aspect is that pure functions are easily parallelised because they do not depend on external factors \cite{milewski:pure-functions-laziness-io-monads}. This further means that the order of function evaluation does not matter.
+
+In order to limit or in some cases (Haskell) disallow mutability, functional programming languages restrict assignment. In the Scheme programming language assignment is available but uses special syntax to signify the impure action. In most cases where assignment would have occurred in an equivalent imperative language, functional languages use binding instead \cite{milewski:pure-functions-laziness-io-monads}. The difference between assignment and binding is that binding does not place data in a memory cell with an alias, but rather associates some data with a name. A binding cannot be changed once it has been made.
+
+\subsection{List Comprehensions and Streams}
+List comprehension is a list building notation used in several languages. It is based on set builder notation from set theory \cite{rosen2011discrete}. The notation is used in mathematics, \acp{GPL}, imperative as well as functional programming languages. However, functional languages can utilise this concept to create infinite lists or streams, of arbitrary content.
+
+A number of languages, such as C\#, have implemented list comprehensions or similar constructs. \btc{nogle kode eksempler ville måske være godt}

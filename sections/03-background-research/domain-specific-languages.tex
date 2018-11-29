@@ -1,0 +1,74 @@
+\section{Domain Specific Languages}
+\acp{DSL} are the opposite of \acp{GPL}\btc{GPL indført tidligere ?}. A \ac{DSL} is not necessarily a programming language, but may instead be used to express some business logic. The advantage of using a \ac{DSL} is that all execution specific details can be abstracted away, and this also gives the benefit that non-programmers can take part in the development. 
+A good \ac{DSL} exposes as little, besides the business logic, as possible and can therefore often be designed to resemble spoken languages to some degree \cite{Walter:2011:IDL:2071423.2071475}.
+
+\subsection{External and internal DSLs}
+\acp{DSL} are categorised into two categories; internal and external. An internal \ac{DSL} can be seem as an extension of a specific language. External \acp{DSL} have their own distinct syntax and are typically processed from the custom syntax into an \ac{AST} \cite{beyak2011saga}. This \ac{AST} can be used in any language and can either be interpreted directly or be used for code generation. A reason for generating code in the same language as the rest of the game/program the \ac{DSL} is to be used in, is that it then can become well-formatted and cleverly implemented\btc{ja eller totalt ulæselig maskin-genereret kode :-)} C++, for instance, and gain the properties of that language and also be compiled together with the rest of the program. For C++ these properties could be compile-time analysis, checking and optimisation, which can be very valuable in game development.
+
+\subsection{DSLs in game development}
+To get a better understanding of \acp{DSL} in game development a popular \ac{DSL}, SCUMM\cite{fandon:scumm}, for games created from the mid-eighties to the late nineties, was chosen to look further into. Afterwards we created a tiny \ac{DSL}, pca, with accompanying interpreter to get a better understanding of how to implement a \ac{DSL} and a scene player for it.
+
+\subsection{SCUMM}
+SCUMM, which stands for Script Creation Utility for Maniac Mansion, is a \ac{DSL} created for the game Maniac Mansion by LucasArts \cite{gamasutra:scumm}. The game is a point-and-click adventure game where the player controls a character by clicking on things in the scene to trigger different events, such as unlocking new areas and picking up items. The \ac{DSL}, SCUMM, was created to ease the development. DSLs can improve productivity by enabling the creative artists, such as the quest and story designers, to create their part of the game without assistance from a programmer \cite{gamasutra:scumm}. This is very beneficial because most game development teams have many creative artists, which do not have education/experience with programming, but are instead experts in designing immersive quests or writing complex, entangled stories that the player can interact with. 
+
+\begin{lstlisting}
+actor sandy face-right
+actor sandy do-animation reach
+walk-actor razor to-object microwave-oven
+start-script watch-edna
+stop-script
+stop-script watch-edna
+say-line dave "Don't be a tuna head."
+say-line selected-kid "I don't want to use that right now."
+\end{lstlisting}
+The snippet above shows the syntax used in SCUMM, and how to start and stop other scripts from inside any script.
+
+\subsection{pca Language} \label{sec:animools}
+We have developed\btc{Har I udviklet pca ? --- Ja} a tiny \ac{DSL} called pca, that is for creating point-and-click adventures, hence the name. It is focused on placing sprites on a background and have these sprite-models be interactive through click events. The language is structured so that each source code file represents a scene.
+Each scene consists of a background image and a number of sprite-models, each of which can be interactive through various actions on clicking on them \cite{github:pca}. 
+
+% TODO indsæt kilde på PEG.js og ref til appendix med grammar for Animools
+\subsection{Implementation of pca}
+The \ac{DSL} pca is implemented using a \ac{PEG}, and the parser was generated using the library PEG.js. PEG.js requires the entire grammar for the lexer and parser to be specified in the same file using a custom syntax with embedded JavaScript. The grammar can be found in \appendixref{pca:grammar}. The "engine" is just a simple webpage with a background image and some JavaScript implementing the placement of sprites and the various click handlers.
+
+Below is a snippet showing how this \ac{DSL} can be used to place a sprite of a house and a deer at specified positions in the scene. Each sprite has defined click handlers, so they are somewhat interactive on clicking on them. A click handler consists of one or several actions that are chained either sequentially or in parallel.
+
+\begin{lstlisting}
+Scene 'in the meadows' with background 'backgrounds/fields_1.png' with resolution 1280x720
+
+Placeholder deerQuest1 = 'find apple for the deers'
+
+Object 'house' with sprite 'sprites/shed.png' and size 0.6 at (750, 525)
+
+Interaction with 'house' {
+  if player has 'key to shed' {
+    go to scene 'scenes/inside_shed'
+  }
+  else {
+    display 'the door is locked, it might require a key to open'
+  }
+}
+
+Actor 'big deer' with sprite 'sprites/deer.svg' and size 1.2 at (858, 570)
+
+Interaction with 'big deer' {
+  if objective deerQuest1 completed {
+    'big deer' says 'thank you so much for the apple!' ->
+    'big deer' says 'you can have this key' ->
+    'big deer' says 'i found it near that tree over there' &
+    player receives 'key to shed' ->
+    'small deer' moves to (-80, 606) over 7s & 'big deer' moves to (-80, 568) over 8s ->
+    'small deer' disappears & 'big deer' disappears
+  }
+  else {
+    'big deer' gets 'hungry' &
+    'big deer' says "i'm hungry" &
+    'big deer' moves to (805, 568) over 1s ->
+    'big deer' moves to (878, 568) over 1.5s ->
+    'big deer' moves to (872, 568) over 0.3s
+  }
+}
+\end{lstlisting}
+
+When the house is clicked, what happens depends on whether the player has the key or not. If the player has the key, the scene will change to the scene located at \texttt{scenes/inside\_shed}.
+When the \texttt{deer} is clicked and the player has completed \texttt{deerQuest1} it will say a couple of lines and then give the player a key to the shed. So in this scene, the deer quest must be completed before progressing to the \texttt{inside\_shed}-scene.\btc{Jeg mangler måske en opsummering af litteraturen om DSL i game development}

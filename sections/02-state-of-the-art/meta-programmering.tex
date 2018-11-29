@@ -1,0 +1,37 @@
+\section{Meta-Programming}
+Meta programming is a programming technique in which programs have the ability to treat programs as data. Meta programming can be used to move computation from run-time to compile-time, to generate code using compile time computations, and to enable self-modifying code \cite{chlipala2010ur} \cite{czarnecki2000generative}. It can also move computations from compile-time to run-time, which for instance may be used to do run-time code generation. Meta-programs can be anything from compilers, interpreters, type checkers, theorem provers, program generators, transformation systems, and program analysers.
+
+In all of these cases, the meta-program manipulates a data object that represents the program itself \cite{sheard2001accomplishments}. When talking about types of meta-programs, there are two sub categories, program generators and program analysers\cite{pasalic2004role}. A program generator solves problems by generating a program that solves a particular instance of the problem. Usually the generated program is "specialised" for a particular problem instance and uses less resources than a general purpose, non-generated solution \cite{sheard2001accomplishments}.
+
+Program analysers observe the structure, environment and program thereafter it computes some values as a result.  These results can be data- or control-flow graphs, or even another program with properties based on the properties of the source program\cite{sheard2001accomplishments}. In addition to these kinds of meta-programs as generators and analysers, or a mixture of both, there are several other distinctions; static vs run-time, manually vs automated annotated and homogeneous vs heterogeneous.
+
+Program generators can come in two variants. Static generators generate code which is written to disk and later processed with normal compilers\cite{czarnecki2002generative}. Run-time code generators are programs that write or construct other programs, and then immediately execute the programs they have generated. The core of program generators is partitioned into static and dynamic code fragments\cite{sztipanovits2002generative}. The static code is the meta-program and the dynamic comprises the object-program, the program being produced. Staging annotations can be used to separate these two pieces\cite{sztipanovits2002generative}. If developers place the staging annotations directly themselves in the meta-programming system, then it is called a manual-staging system. On the other hand, if the staging annotations are placed by an automatic process, then the meta-programming system is called an automatic-staged system\cite{sztipanovits2002generative}.
+
+There are two other very distinct types of meta-programming systems: homogeneous and heterogeneous systems. 
+Homogeneous systems are systems where both the meta program and the object program share the same language, and heterogeneous systems where the meta-language is different from the object-language\cite{sheard2001accomplishments}.
+
+\subsection{Meta-Programming Uses}
+Meta-programming provides various benefits to users. Some of the these benefits are: performance, partial evaluation, translation, reasoning and mobile code.
+
+\begin{description}
+    \item[\textbf{Performance}]
+    Meta-programming provides mechanisms allowing general purpose programs to be written as interpretive programs while maintaining performance; without the usual interpretive overhead \cite{sheard2001accomplishments}. An example of such a system is the Mix evaluator \cite{jones1989mix}.
+
+    \item[\textbf{Partial Evaluation}] 
+    Partial evaluation is another meta-programming technique to improve performance. The goal is to find and perform as many calculations before run-time as possible. These values are replaced by literals in the compiled code.
+
+    \item[\textbf{Translation}]
+    Translating one object-program to another object-program. The source and target language might be the same, but it not required. Examples of translators are compilers and program transformation systems\cite{sheard2001accomplishments}.
+
+    \item[\textbf{Reasoning}]
+    Meta-programming allows developers to reason about a object-program. If a object-program is written in a formal language, an analysis can discover properties of the object-program. These properties can be used to improve performance, provide assurance about the object-program behaviour, or validate meaning preserving transformations. Examples of reason meta-programs can be analysis such as flow analysis and type checkers.
+
+    \item[\textbf{Mobile code}]
+    Recently meta-programming has been used as a means for program transportation. Instead of using networks to bring data to programs, networks are used to bring the program to the data. Due to security concerns, intentional representations of programs are transported across the network\cite{Hornof:1999:CCR:609149.609203},\cite{Thibault:1998:SEA:829523.830979}. These representations can be formally verified that they do not compromise the integrity of the host machines they run on. The transported programs are object-programs\footnote{Object programs can be represented in various formats including text and intermediary formats such as Java Byte code.} and the analyser are meta-programs.
+\end{description}
+
+The reason meta-programming systems are useful, is because they make manipulation of objects and object programs easier. It can be easy to use and understand by the programmer, provide high-level abstraction that captures the details of both the object-language and the patterns used by the meta-program\cite{sheard2001accomplishments}.
+
+
+
+

@@ -1,0 +1,87 @@
+\section{Micro-Benchmarks}
+In this experiment we examine four different game engines; Unreal Engine, Unity, CryEngine and Godot. The following research questions formulate the foundation of the experiment:
+\begin{itemize}
+    \item Are compiled languages (in this case C++) in fact faster than their interpreted and \ac{JIT}-compiled counterparts?
+    \item Does a game engine's runtime have a negative effect on a game engines performance in comparison to its native performance\footnote{By native we mean the language in it's default runtime}?
+    \item In the context of Unity, does the use of a functional language (Clojure) increase execution time?
+\end{itemize}
+
+\subsection{Test cases}
+The test cases were created to explore some different aspects of a gameplay programming language. The test cases are as follows: 
+\begin{description} 
+    \item[Sestoft's multiply] Sestoft's \ttt{multiply}-method is listed in \lstref{sestoft:multiply}. This method is designed to prevent compilers from optimising the multiplication away with a constant value as well as keeping the input relatively small.
+    %\item Sum all elements of a matrix
+    \item[Vector math] In this microbenchmark, a series of vector operations was tested; i.e. Scaling a vector by a factor, Multiplying two vectors, translating a vector, subtracting two vectors, calculating the length of a vector, calculating dot product of two vectors.
+    \item[Array Allocation] In Array Allocation an array of 100,000 elements should be allocated and initialised to 0 and the last element returned.
+    \item[Primes100] In Primes100 the Sieve of Eratosthenes algorithm\cite{eratosthenes:sieve} should be implemented and generate all prime numbers that are lower than 100. This produces a list of numbers, the last of which are returned from the function. 
+    %\item Side-scroller player control code
+\end{description}
+
+\begin{lstlisting}[label={lst:sestoft:multiply}, caption={Sestoft's proposed benchmarking method}, language={Java}, style=java-highlight]
+private static double multiply(int i) {
+    double x = 1.1 * (double)(i & 0xFF);
+    return x * x * x * x * x * x * x * x * x * x * x * x * x * x * x * x * x * x * x * x;
+}
+\end{lstlisting}
+
+For the vector calculations, the engines' implementation were used. In order to support the native platforms we chose two vector libraries; \ttt{Boost} for C++ \cite{cpp:vector} and \ttt{System.Numerics} for C\# \cite{system:numerics:vectors}. The reason for choosing Boost for C++ is that it is widely used, for instance in Unreal Engine's own vector implementation. Another viable option was to use Lumberyard's vector implementation \cite{lumberyard:vector}, which is also open source. For C\# we chose to use \ttt{System.Numerics.Vector<T>} because it is included in the standard library. The \ttt{System.Numerics.Vector<T>} is implemented to use \ac{SIMD} calls to improve performance \cite{msdn:vectors}.
+
+\subsection{Results}
+In this section the results of the test cases are shown and discussed. The most prominent results have been selected and listed in \tableref{benchmark:release-results}, \figureref{scale2d-res} and \figureref{mem-test-res}. The results from all tests may be found in \appendixref{benchmark-res}. All tests results are listed as mean running time in nanoseconds and the graphs use logarithmic scale on the y-axis, as the running times vary wildly between the platforms. 
+
+\textbf{\begin{table}[H]
+    \sisetup{round-mode=places}
+    \rowcolors{1}{}{lightgray}
+    \makebox[\textwidth][c]{
+    \begin{tabular}{| P{2.2cm} | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] |}
+        \hline
+        \textbf{Test case} & \textbf{Dotnet} & \textbf{Mono} & \textbf{Unity} & \textbf{C++}
+        \csvreader[head to column names]{benchmark-tab.csv}
+        {1=\cases, 5=\dotnet, 7=\mono, 3=\unity, 13=\godot, 12=\cpp} % <Column number>=<Macro>
+        {\\\hline \cases & \dotnet & \mono & \unity & \cpp}
+        \\ \hline
+    \end{tabular}}
+    \caption{Release Benchmark Results, results listed in runtime in nanoseconds}
+    \label{tab:benchmark:release-results}
+\end{table}}
+
+\figureref{scale3d-res} was selected as an example of how the running times are distributed over the platforms. The first thing to notice is that in most cases the running time decreases drastically from running in debug/editor-mode versus running in release-mode. This was, however, not the case for Mono, Godot and to some extent Unity. Taking into account that both Godot and Unity runs on the mono platform, it is not strange that their performance reflect that of Mono. It seems, comparing Mono with Dotnet, that Mono fails to optimise the code as much for release builds.
+
+\figureref{mem-test-res} shows the results from Array Allocation. The next thing to notice is that native C++, in all cases but Array Allocation, runs slower that both Dotnet and Mono.  But that can be attributed to the fact that it was run under \ac{WSL}. This is especially true, as Unreal Engine ranks as the most performant of all competitors in the debug-category.
+%Unreal Engine does not compete in the release-category, as we did not succeed in neither running, nor outputting running times after building the project in release-mode.
+
+\benchmarkRes{Scale Vector 3D}{scale3d-res}
+
+Among the game engines Unreal Engine ranks the highest - it even ranks higher in debug-mode than all the other engines do in release-mode. This could indicate that either there is some truth to the common belief that C++ is the fastest language for game development or that Unreal Engine's C++ implementation is far better optimised than any other platform in this experiment. 
+One thing to notice, however, is that Unreal Engine fails to optimise the Array Allocation, which was the case for both Visual C++ and \ac{GCC} C++.
+
+\benchmarkRes{Array Allocation}{mem-test-res}
+
+The performance benchmarks was only run once for each platform, but the design of the benchmark takes this into account by running each test multiple times.
+
+\subsection{Threats to Validity} \label{sec:micro:threats}
+In this section the methods used to obtain the results and the results themselves are examined to uncover potential threats to validity. We will examine the internal and external validity of the results; where the internal validity can summarised as whether the tests measure what it is intended to measure. The external validity is whether the utilised test cases apply to other cases in the field.
+
+\subsubsection{Internal Validity}
+The major threats to the internal validity is that many compilers perform some optimisation of code regardless of optimisation settings. An example of this is the C function in \lstref{bad-c}. The compiler will instead replace all calls to this function with the literal four. This removes a function call and is desirable for programs in general, but not benchmarks. It is vital that the benchmark does not take shortcuts when running, otherwise results are skewed.
+
+\begin{lstlisting}[language=C,label={lst:bad-c},caption={An example of Function Inlining}]
+int bad_func(){
+    return 4;
+}
+\end{lstlisting}
+
+In order to deal with the internal threats we have examined our results and looked for unexpected results. Such results are examined in detail to verify that they are genuine or a faulty measurement. During the initial implementation of the tests these themes where kept in mind. Finally, we have examined the following issues.
+
+\begin{description}
+    \item[\textbf{Array Allocation}]
+    C\# is a managed language which means that it is impossible to allocate an array without also initialising each element in the array. In C++ it is possible to allocate an array without initialising each element and also possible to initialise each element. To make the compared functions more similar, we chose to initialise the array in both C\# and C++. It can be argued that in C++, it will not always make sense to initialise each element, but as there also are many cases where initialising each element would be most sensible. Another test could be added to compare C++ with uninitialised arrays against C\# to examine the effect of that.
+    \item[\textbf{Windows Subsystem for Linux}]
+    All the benchmarks are run on the same computer and in the same \ac{OS}, however, as \ac{GCC} is not implemented on Windows, \ac{WSL} was used. Initially we where worried that this would incur a significant overhead that might skew results, however, research showed that \ac{WSL} performs almost as well as bare metal Linux distributions \cite{phoronix:wslperformance}. The only significant difference was \ac{I/O} which is not used during the micro-benchmarks themselves.
+    \item[\textbf{Skill Level}]
+    The tests were implemented by the authors of this report, who have different experience levels with the languages. All authors have experience with C\#, but few have C++ experience. This has effected test implementation time and may have effected the efficacy of the tests themselves. To mitigate this, we have used online resources and followed best practice.
+\end{description}
+
+\subsubsection{External Validity}
+The primary external threat is whether the selected test cases are properly selected. If the tests are improperly selected they may not be representative of actual game engine workloads or maybe the test cases are local maxima or minima. Internal threats can in this case be examined and determined to be correct or incorrect, however, this is not the case for the external threats. It is very difficult to prove the non-existence of local maxima and minima\btc{??}.\todo{Discuss validity of test selection}
+

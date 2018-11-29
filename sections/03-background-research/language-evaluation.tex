@@ -1,0 +1,59 @@
+\section{Language Evaluation} \label{sec:language-evaluation}
+In this section we examine language evaluation strategies. The purpose of doing so is to formulate a foundation for comparison of a series of programming languages for game development. 
+Three methods are examined; cognitive dimensions\cite{green1996usability}, the discount method for language evaluation\cite{kurtev2016discount} and an expert-review method presented by Nanz et. al\cite{nanz2013benchmarking,nanz2013examining}.
+
+\subsection{Cognitive Dimensions} \label{sec:cog-dim}
+Cognitive dimensions is an \textit{\dquote{evaluation technique for interactive systems and non-interactive notations}} \cite{green1996usability}. The technique was proposed in \cite{green1996usability}, where the authors use cognitive dimensions to compare three programming languages; Basic, Prograph and LabVIEW. While later literature on cognitive dimensions has diverged from programming-language evaluation, we will use it in the original intent.
+
+Cognitive dimensions present fourteen dimensions along which a system or notation can be evaluated. The following lists the dimensions and gives a brief description of each dimension. 
+
+\begin{labeling}{\quad\quad\quad}
+\item[Abstraction Gradient] Describes how well the programming language supports treating a group of functionality as a single entity. The Authors divide programming languages into three categories; abstraction-hating, abstraction-tolerant and abstraction-loving.
+\item[Closeness of Mapping] This dimension represents how close the programming world is to the problem world. One example is how well real-world entities can be represented in the programming language. The authors claim that textual programming languages are a long way from this, where as visual programming languages are closer.
+\item[Consistency] Consistency defines how easily a programmer can learn the rest of a language after he/she has learned a subset of it. The authors present inconsistency with the example of Pascal, where reals and integers can be read and written, but not booleans.
+\item[Diffuseness/Terseness] This defines how briefly a program can be expressed in a language or put in a another way, how many symbols it requires to express a meaningful operation.
+\item[Error-proneness] Errors-proneness defines how easy it is to do something wrong in a language. The authors differentiate between \textit{mistakes} and \textit{slips}, where slips occur when the programmer does something they \textit{\dquote{didn't mean to}}. They claim that all textual languages are inherently error-prone.
+\item[Hard Mental Operations] Hard mental operations cover how frequent \squote{brain twisters} occur in a language. Hard mental operations are often caused by the conditional statements and come in two flavours; how hard it is to syntactically express a condition correctly in the language and how hard it is to combine two or more conditions. If both of those statements are true, the language has hard mental operations.
+\item[Hidden Dependencies] An example of a hidden dependency is the use of global variables in textual languages. Hidden dependencies occur when there is a dependency between two components, that is not visible from either one or both of the components. If a language contains a lot of hidden dependencies it makes programs harder to comprehend.
+\item[Premature Commitment] Premature commitment explains how much guess-work the programmer is required to make. It occurs if there is a certain order in which components can be created or if the user is forced to create certain program parts without being sure how they should work.
+\item[Progressive Evaluation] Progressive evaluation describes how well a programmer may evaluate his own progress while the program is taking shape. If a language supports running programs that are only partially done, it has a good progressive evaluation.
+\item[Role-expressiveness] Role-expressiveness is intended to describe how easy it is to answers the question \textit{\dquote{what is this bit for?}}. Role-expressiveness can be enhanced by well-structured modularity, meaningful identifiers and by the placement of beacons, that \textit{\dquote{signify certain highly diagnostic code structures}}.
+\item[Secondary Notation and Escape from Formalism] Secondary notation and escape from formalism explains how well a programming language supports conveying information that is not directly placed in the program code. Examples of such information could be indenting, commenting and adding newlines to separate blocks of code.
+\item[Viscosity] Viscosity is the difficulty of making small changes to a program in a programming language. In general viscosity can be reduced by introducing abstractions.
+\item[Visibility and Juxtaposability] Visibility describes how much of the program is accessible without cognitive work, i.e. if it is or can be made readily available when needed. It measures the number of steps the programmer has to take in order to make an item visible. Juxtaposability is the ability to show two parts of the same program side-by-side.
+\end{labeling}
+
+Some of the dimensions are dependant on each other, the authors point out that abstraction may reduce viscosity, but increase hidden dependencies. Exactly how the dimensions depending on one another is stated as further work in the article \cite{green1996usability}.
+
+For a given language, it can be scored in each of the dimensions, which enables a structured comparison between two or more languages.
+
+\subsection{Discount Method for Programming Language Evaluation}
+The discount method for programming language evaluation was presented in \cite{kurtev2016discount}. It is an evaluation method based on the Discount Usability Evaluation and the \ac{IDA}. The method presents nine steps:
+\begin{enumerate}
+    \item \textbf{Create tasks:} These tasks need to be specific to the language and could be based on a scenario.
+    \item \textbf{Create a sample sheet:} The sample sheet should present useful examples from the language, that are related to the tasks.
+    \item \textbf{Estimate task duration:} The authors suggest measuring the duration by completing the tasks yourself and taking into account that the participants likely will need more time for the tasks, as they need to get acquainted with the new language. They also suggest creating more tasks than the time permits, but focusing the latter tasks on less important features.
+    \item \textbf{Prepare setup:} In this step the setup should be prepared. The setup can range from a full-blown usability test to pen-and-papers based test. No matter the setup, they recommend recording the tests. The authors also suggest that a pilot-test may help identifying eventual problems with the test setup.
+    \item \textbf{Gather participants:} The authors suggest the golden rule of five participants and claim that more participants will result in recurring problems and fewer will result in problems left undiscovered.
+    \item \textbf{Start the experiment:} The authors underline the importance of telling the test subjects that it is the language that is being tested, and not their skills.
+    \item \textbf{Keep participants talking:} The facilitator's role in the test is to keep the participant talking. The facilitator may discuss the solution with the test subject and confirm when a task has been completed.
+    \item \textbf{Interview the participant:} The interview should revolve around the language and the task. They suggest preparing questions or questionnaires.
+    \item \textbf{Analyse data:} The analysis should list the problems in three categories; cosmetic, serious and critical. The cosmetic category contains problems related to typos and keywords. Serious problems are related to the structure of the programs, but still may be fixed with relatively few changes. The critical problems are those related to fundamental misunderstandings of the programming language and would require inspections of the code to fix.
+\end{enumerate}
+
+In the article the authors conclude:
+\quoteWithCite{The  data  suggests  that  our method  will  be  better  suited  for  identifying  some  of  the deeper problems with a programming language when compared to the syntax questionnaires used as evidence for Quorum.}{Kurtev, Svetomir and Christensen, Tommy Aagaard and Thomsen, Bent}{kurtev2016discount}
+This method therefore shows promising results and with the minimal setup required for the method, it may be possible to evaluate the language several times during its formulation.
+This method could also be used to evaluate language constructs/features by running the evaluation on two or more languages and comparing the results.
+
+\subsection{Expert-review method}
+In the article \textit{Benchmarking Usability and Performance of
+Multicore Languages} \cite{nanz2013benchmarking}, the authors examine four different parallel programming languages to see how well suited they are to solve a set of six parallel programming problems. While the performance measurement and associated rating presents an interesting read, the method they use is of particular interest in this context. 
+
+In the experiment the authors recruit five participants; a competent programmer with six years of experience and a set of four language experts (members of the languages' compiler development team). The programmer is tasked with implementing solutions to each of the six parallel programming problems. Furthermore, each problem must be implemented with a sequential and a parallel solution. After the programmer has implemented a set of problems in a language, it is sent to the corresponding language expert who reviews the solution and suggests improvements. The expert's comments is sent back to the programmer who improves the solution. This procedure is repeated twice, at which point the benchmarking is started.
+
+The authors conclude themselves that the experts' feedback to the programmer presents valuable insights into possible pitfalls for each language, which is investigated in \textit{Examining the Expert Gap in Parallel Programming} \cite{nanz2013examining}. In this article the authors examine the experts' comments to the solutions categorised over four metrics; code size, execution time, speed up and correction time. 
+They conclude that in most cases the expert is only able to make modest improvements to the solution -- a good result, as this means that the gap between a routined programmer and an expert is small. Another interesting result from the study shows, that one of the expert's solutions in Chapel has 67.8\% increased execution time, compared to the programmer's. The reason for this is that the expert's solution was compiled with Chapel 1.5, whereas in the experiment they used Chapel 1.6, which introduced new optimisations. 
+
+The authors suggest that a similar approach to language evaluation can be repeated with groups of programmers. It's primary benefit is that it requires smaller effort from each individual programmer and the nice benefit that the influence of experience from implementing the other solutions is limited.
+For the expert-review, the authors suggest using an expert solution that the programmers' solutions can be compared against. This reduces the amount of time the experts' have to use to the time it takes to implement the solution in the first place. They also suggest using a group of reviewers as an alternative, in cases where it is not possible to find language experts.

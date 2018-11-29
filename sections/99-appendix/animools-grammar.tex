@@ -1,0 +1,92 @@
+\chapter{Animools}
+\section{Animools Grammar}
+\begin{lstlisting}[language=PEG, label={app:animools:grammar}, caption={Animools Language Grammar}]
+{
+    function fromRelative(relSize) {
+    	return Math.floor(relSize * 128);
+    }
+}
+
+Start =  lines:Line+ { return lines }
+
+Line
+	= _ line:Animal _ { return line }
+    / _ line:CursorAction _ { return line }
+
+Animal "animal declaration"
+    = "animal" _ name:string _ "with" _ "size" _ size:number _ "at" _ pos:Position { return { type: "animal", name, size: fromRelative(size), pos }; }
+
+
+Actions
+    = head:InbuiltAction _ "->" _ tail:Actions { return [head, ...tail] }
+    / head:InbuiltAction { return [head] }
+
+InbuiltAction
+  = sprite:string _ "says" _ value:string { return { type: "inbuilt", handler: "output", arguments: [ sprite, value ] } }
+  / sprite:string _ "moves" _ "to" _ to:Position _ "over" _ over:time { return { type: "inbuilt", handler: "moveSprite", arguments: [ sprite, to, over]   } }
+
+CursorAction
+	= action:CursorActions _ sprite:string ":" _ func:Actions { return { type: "action", action, sprite, func }; }
+
+CursorActions "cursor action"
+	= "point" _ "at" { return "point"; }
+	/ "click" _ "on" { return "click"; }
+
+Direction
+  = "left" { return { x: -1, y: 0 }; }
+  / "right" { return { x: 1, y: 0 }; }
+  / "up" { return { x: 0, y: -1 }; }
+  / "down" { return { x: 0, y: 1 }; }
+
+Position = "(" _ x:number _ "," _ y:number _ ")" { return { x, y } }
+
+time
+  = value:number _ unit:time_unit { return Math.floor(value * unit) }
+time_unit
+	= "ms" { return 1; }
+	/ "s" { return 1000; }
+
+number
+    = DIGIT+[,.]DIGIT+ { return parseFloat(text()); }
+    / DIGIT+ { return parseInt(text()); }
+    
+_ "whitespace"
+    = [ \t\n\r]*
+
+varName "variable"
+  = chars:char* { return chars.join(""); }
+
+
+string "string"
+  = quotation_mark chars:char* quotation_mark { return chars.join(""); }
+
+char
+  = unescaped
+  / escape
+    sequence:(
+        '"'
+      / "\\"
+      / "/"
+      / "b" { return "\b"; }
+      / "f" { return "\f"; }
+      / "n" { return "\n"; }
+      / "r" { return "\r"; }
+      / "t" { return "\t"; }
+      / "u" digits:$(HEXDIG HEXDIG HEXDIG HEXDIG) {
+          return String.fromCharCode(parseInt(digits, 16));
+        }
+    )
+    { return sequence; }
+
+escape
+    = "\\"
+
+quotation_mark
+    = '"'
+
+unescaped
+    = [^\0-\x1F\x22\x5C]
+
+DIGIT  = [0-9]
+HEXDIG = [0-9a-f]i
+\end{lstlisting}

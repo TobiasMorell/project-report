@@ -1,0 +1,33 @@
+\chapter{Micro-Benchmarking Results} \label{app:benchmark-res}
+
+\begin{table}[H]
+    \sisetup{round-mode=places}
+    \rowcolors{1}{}{lightgray}
+    \makebox[\textwidth][c]{
+    \scalebox{.8}{
+    \begin{tabular}{| P{2.2cm} | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] |}
+        \hline
+        \textbf{Test case} & \textbf{Dotnet} & \textbf{Mono} & \textbf{Unity} & \textbf{Godot} & \textbf{CryEngine C++} & \textbf{Unreal} &  \textbf{C++}
+        \csvreader[head to column names]{benchmark-tab.csv}
+        {1=\cases, 5=\dotnet, 9=\mono, 11=\unity, 7=\godot, 3=\cryppDebug, 13=\unreal, 16=\cpp} % <Column number>=<Macro>
+        {\\\hline \cases & \dotnet & \mono & \unity & \godot & \cryppDebug & \unreal & \cpp}
+        \\ \hline
+    \end{tabular}}}
+    \caption{Debug Benchmark Results}
+    \label{tab:benchmark:debug-results}
+\end{table}
+
+\benchmarkRes{Scale Vector 2D}{scale2d-res}
+\benchmarkRes{Multiply Vector 2D}{multiply2d-res}
+\benchmarkRes{Multiply Vector 3D}{multiply3d-res}
+\benchmarkRes{Translate Vector 3D}{translate2d-res}
+\benchmarkRes{Translate Vector 3D}{translate3d-res}
+\benchmarkRes{Subtract Vector 2D}{substract2d-res}
+\benchmarkRes{Subtract Vector 3D}{substract3d-res}
+\benchmarkRes{Length Vector 2D}{length2d-res}
+\benchmarkRes{Length Vector 3D}{length3d-res}
+\benchmarkRes{Dot Product 2D}{dotproduct2d-res}
+\benchmarkRes{Dot Product 3D}{dotproduct3d-res}
+\benchmarkRes{Sestoft}{sestofttest-res}
+\benchmarkRes{Array Allocation}{memtest-res}
+\benchmarkRes{Prime}{prime100-res}
