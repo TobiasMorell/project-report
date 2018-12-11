@@ -1,5 +1,5 @@
 \section{Scripting vs. Engine}
-In this section we explore whether the common hypothesis that \textit{\dquote{interpreted languages are slower than compiled languages}}\cite{IBM:Knowledgebase} is actually true. In this case we do so in the context of gameplay programming languages (as presented in \secref{gameplay:programming}). While common belief tell that interpreted languages execute slower than compiled languages, there is little research to prove this claim. Furthermore the degree of difference in performance is interesting when considering the cost effectiveness of such systems.
+In this section we explore whether the common hypothesis that \textit{\dquote{interpreted languages are slower than compiled languages}}\cite{IBM:Knowledgebase} is actually true. In this case we do so in the context of gameplay programming languages (as presented in \secref{gameplay:programming}). While common belief tells us that interpreted languages execute slower than compiled languages, there is little research to prove this claim. Furthermore the degree of difference in performance is interesting when considering the cost effectiveness of such systems.
 
 \subsection{Platform}
 In order to explore the claim a game engine that provides support for both an interpreted and a compiled language was needed. Two candidates that fulfil these requirements are Godot and CryEngine \cite{cryengine:home}.
@@ -13,36 +13,34 @@ On the features section of Godot Engine's website they promise:
 \end{itemize}
 CryEngine promise support for C\#, C++ and ScriptBind (an \ac{API} for Lua) \cite{cryengine:languages}.
 
-Both options naturally sounds very appealing for the test. As a first option Godot was chosen. The three languages supported (among many others) by Godot presents three different compilation strategies; GDScript is interpreted in the editor and \ac{JIT} compiled in release\cite{locurcio:gdscript}, C\# is \ac{JIT} compiled at runtime and C++ is compiled to machine code (which in Godot's case is called by another Godot \ac{DSL}: NativeScript). 
+Both options sound very appealing for the test. As a first option Godot was chosen. The three languages supported (among many others) by Godot presents three different compilation strategies; GDScript is interpreted in the editor and \ac{JIT} compiled in release\cite{locurcio:gdscript}, C\# is \ac{JIT} compiled at runtime and C++ is compiled to machine code (which in Godot's case is called by another Godot scripting language: NativeScript). 
 
 \subsection{Test setup}
 We decided to use the \ttt{Mark8} benchmarking algorithm presented in \cite{sestoft2013microbenchmarks} (see also \secref{sestoft-scaffolding}). However, as GDScript does not currently have a native stopwatch implementation, a custom stopwatch was implemented. This stopwatch contains the following methods:
 \begin{labeling}{\quad\quad}
     \item[Start] Starts the stopwatch by reading the current system time in the finest possible granularity since the game started and storing it in a variable, \ttt{start\_time}.
-    \item[ElapsedTime] Calculates the elapsed time by subtracting \ttt{start\_time} from the current time and thereby converting to nanoseconds.
+    \item[ElapsedTime] Calculates the elapsed time by subtracting \ttt{start\_time} from the current time and thereafter converting to nanoseconds.
 \end{labeling}
-In order to establish a common foundation for the tests a similar stopwatch-class was also implemented in C\# and C++. The only difference between the implementations are that C\# and C++ natively support counting in nanoseconds. There is, of course, a loss of precision in the GDScript implementation but it must suffice. 
+In order to establish a common foundation for the tests a similar stopwatch-class was also implemented in C\# and C++. The only difference between the implementations are that C\# and C++ natively support counting in nanoseconds, whereas GDScript counts in miliseconds. There is, of course, a loss of precision in the GDScript implementation but it must suffice. 
 
 Another thing that proved troublesome was that GDScript does not have first-class functions. This is required by Sestoft's algorithm, such that the timing code can be reused over multiple different tests. GDScript does, however, provide a way of packing a function into an object using \ttt{FuncRef} \cite{godot:funcref}. The packing takes as argument an object reference and the name of the function and does as such not have a direct reference to the function. How much overhead there is in looking up and invoking such function compared to C++'s and C\#'s high-order functions is unknown and might affect the running times.
 
 Apart from said two problems, the \ttt{Mark8} algorithm could be directly translated to the three target languages.
 
 \subsection{Method}
-According to the findings in \cite{vmwarmup} starting up a virtual machine might take very long time. We expect the same to be the case for engine startup time. In order to avoid running the tests while the engine and virtual machine is starting up, a small test-runner was written. The test-runner starts the tests when the Space button is clicked. When the tests were run, we started the engine and waited three to five seconds before pressing space and starting the tests.
+According to the findings in \cite{vmwarmup} a virtual machine have a startup time, wherein it doesn't reach peak performance. We expect the same to be the case for engine startup time. In order to avoid running the tests while the engine and virtual machine is starting up, a small test-runner was written. The test-runner starts the tests when the Space button is clicked. When the tests were run, we started the engine and waited three to five seconds before pressing space and starting the tests.
 
-To the extend it was possible, the test-runner would output \ac{CSV}-files containing the data for each language. Another small script to merge and format the data was also written, which made it easier to run the tests multiple times.
+To the extent it was possible, the test-runner would output \ac{CSV}-files containing the data for each language. Another small script to merge and format the data was also written, which made it easier to work with the data.
 
-\subsection{False promises}
-\todo{Insert ref to tabel with results}
-The implementation of the test cases was simple in GDScript, however, as the implementation proceeded to C\# and C++ problems started to occur. First and foremost, the \textit{\dquote{full C++/C\# support}} promised by Godot was not so full in the end. As of the time of writing, the C\# support is only a partial implementation of the Mono runtime.
+\subsection{False Promises}
+The implementation of the test cases was simple in GDScript, however, as the implementation proceeded to C\# and C++ problems started to occur. First and foremost, the \textit{\dquote{full C++/C\# support}} promised by Godot was not so full in the end. As of the time of writing, the C\# support is only a partial implementation of the Mono runtime, which in and of itself is a partial implementation.
 
-As for C++, Godot uses another scripting language called NativeScript, which can dynamically load compiled code from C, C++, D, Nim and basically any language that can link to a C \ac{ABI}. However, NativeScript is in a very early stage and is undergoing frequent changes. There exist a large corpus of guides on what to do, problem is that many are contradictory and/or outdated.
+As for C++, Godot uses another scripting language called NativeScript, which can dynamically load compiled code from C, C++, D, Nim and basically any language that can link to a C \ac{ABI}. However, NativeScript is in a very early stage and is undergoing frequent changes. While there exists a large corpus of guides and tutorials, they where contradictory and/or outdated.
 
-We did not succeed in finding a solution and was left with the option of benchmarking GDScript against a partial C\# implementation. We agreed that this benchmarking would not provide any useful information and decided to switch to another approach.
+We did not succeed in finding a solution and was left with the option of benchmarking GDScript against a partial C\# implementation. We agreed that this benchmarking would not provide any useful information and decided to switch to a different approach.
 
 \subsection{CryEngine}
-\todo{Insert ref to tabel where results are shown}
-As a second approach CryEngine was examined. This involved porting the code to Lua and creating game projects for the C++ and C\# code. Luckily, the C++ and C\# code could be reused from the previous experiment with very little modification. However, as we proceeded with the Lua implementation it turned out that Lua had been deprecated in CryEngine V5.3 in favour of C\# and Lua support had been (seemingly) completely removed in V5.4. This rendered us unable to benchmark an interpreted language in the context of CryEngine.
+As a second approach CryEngine was examined. This involved porting the code to Lua and creating game projects for the C++ and C\# code. Luckily, the C++ and C\# code could be reused from the previous experiment with very little modification. However, as we proceeded with the Lua implementation it turned out that Lua had been deprecated in CryEngine V5.3 in favour of C\# and Lua support had been (seemingly) completely removed in V5.4 \cite{perkins:cryengine}. This rendered us unable to benchmark an interpreted language in the context of CryEngine.
 
-\subsection{Conclusion}
+\subsection{Summary}
 As none of the two game engines that where selected for this experiment turned out to provide a useful framework for this test, we decided to take a different approach, which is presented in the following section. Furthermore, it would seem that interpreted languages are loosing favour and are been replaced by \ac{JIT}-compiled languages in many engines. In the engines presented in this report, Unity has deprecated JavaScript and Boo in favour of C\# \cite{fine:unityscript, unity:boo} and CryEngine has replaced Lua in favour of C\#\cite{perkins:cryengine}.

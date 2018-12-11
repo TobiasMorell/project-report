@@ -1,18 +1,18 @@
-\section{Performance Measurement with Micro Benchmarking} \label{sec:micro-benchmarking}
-The performance of a programming language can be difficult to ascertain. Many factors play into the performance of any given block of code, this is especially true in managed languages like Java or C\#. Furthermore, which metrics to measure also play a significant role in the results. Additionally some languages have environments that can increase execution time in certain cases. Micro-benchmarks is one of the possibilities within the field of performance benchmarking.
+\section{Performance Measurement with Microbenchmarking} \label{sec:micro-benchmarking}
+The performance of a programming language can be difficult to ascertain. Many factors play into the performance of any given block of code, this is especially true in managed languages like Java or C\#. Furthermore, which metrics to measure also play a significant role in the results. Additionally some languages have environments that can increase execution time in certain cases. Microbenchmarks is one of the possibilities within the field of performance benchmarking.
 
 \subsection{Measurement Metrics}
-Multiple metrics can be used to measure the performance of code; cycles, \ac{CPU} time or wall clock time. According to the work of Peter Sestoft wall clock time is the more reliable option \cite{sestoft2013microbenchmarks}. The advantage of wall clock time as a metric is that it is easily comparable to other tests. It furthermore simplifies the testing infrastructure \cite{sestoft2013microbenchmarks}.
+Multiple metrics can be used to measure the performance of code; cycles, \ac{CPU} time or wall clock time. According to \cite{sestoft2013microbenchmarks} wall clock time is the more reliable option. The advantage of wall clock time as a metric is that it is easily comparable to other tests. It furthermore simplifies the testing infrastructure.
 
 \subsection{Language vs. Environment}
-Some languages, such as Java and C\#, are managed by a \ac{VM}. When testing performance it is important to account for the resources used by the \ac{VM}. Since certain functionality is outside the control of the programmer it may be difficult to be certain that the garbage collector did not run while the function under test was run. Therefore Peter Sestoft suggests that a large number of tests are run and that the standard deviation is computed on the resulting time \cite{sestoft2013microbenchmarks}. Furthermore, Sestoft does not run the code under test an arbitrary number of times. He runs the code until the total elapsed time exceeds a quarter second. This gives a much clearer picture of the performance of the language under test.
+Some languages, such as Java and C\#, are managed by a \ac{VM}. When testing performance it is important to account for the resources used by the \ac{VM}. Since certain functionality is outside the control of the programmer it may be difficult to be certain that the garbage collector did not run while the test was executed. In \cite{sestoft2013microbenchmarks} Sestoft, the author of the article, suggests taking the mean running time over a large number of tests are run and computing the standard deviation computed on the resulting time. Furthermore, Sestoft advises not to run the code under test an arbitrary number of times, but rather run the tests multiple times, until the total elapsed time exceeds a quarter second. This gives a much clearer picture of the performance of the language under test.
 
 Using this testing methodology Sestoft achieved some interesting results comparing managed and unmanaged languages \cite{sestoft2010numeric}. Predominately among these is that managed languages where almost as performant as unmanaged languages in many cases and performed better in some.
 
 \subsection{Benchmark Scaffolding} \label{sec:sestoft-scaffolding}
-Peter Sestoft's  work with testing the C\# and Java languages is based on some scaffolding, which allows for the automated micro-benchmarking of a method. The method must take an integer as a parameter and return a double, however whether these values are used is less important. The parameters and return values are present to prevent the compiler from inlining the function or optimising it away entirely.
+Sestoft's  work with testing C\# and Java is based on some scaffolding, which allows for the automated microbenchmarking of a method. The method must take an integer as a parameter and return a double. Whether these values are used is less important. The parameters and return values are present to prevent the compiler from inlining the function or optimising it away entirely.
 
-Furthermore, the scaffolding takes a duration and a number of iterations as parameters. The duration is the minimum amount of time that the micro-benchmark must execute. The mean execution time of the micro-benchmark calls is then calculated along side a standard deviation. The iteration parameter determines the amount of times the overall benchmark is run. Therefore if the minimum execution time is 0.25 seconds and the iterations is set to 5, then the benchmark will run for a total of 1.25 seconds.
+Furthermore, the scaffolding takes a duration and a number of iterations as parameters. The duration is the minimum amount of time that the microbenchmark must execute. The mean execution time of the microbenchmark calls is then calculated along side a standard deviation. The iteration parameter determines the amount of times the overall benchmark is run. Therefore, if the minimum execution time is 0.25 seconds and the iterations is set to 5, then the benchmark will run for a total of 1.25 seconds.
 
 The scaffoling implemented by Sestoft can be seen in \lstref{sestoft}
 \begin{lstlisting}[language=Java, style=java-highlight, caption={Sestoft's Scaffolding \cite{sestoft2013microbenchmarks}}, label=lst:sestoft]
@@ -39,3 +39,5 @@ public static double Mark8  (String msg, String info, IntToD oubleFunction f,
     return dummy / totalCount;
 }
 \end{lstlisting}
+
+\tmc{I think we should put a section here, where we summarise our findings.}

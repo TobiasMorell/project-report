@@ -157,7 +157,7 @@
 }
 
 \newcommand{\dvanbo}{\color{pink}}
-\newcommand{\tmc}[1]{\todo[color=pink!80]{#1}}
+\newcommand{\tmc}[1]{\todo[color=violet]{#1}}
 \newcommand{\btc}[1]{\todo[color=red!75]{#1}}
 \newcommand{\needcite}{\todo{Citation needed}}
 \newcommand{\inline}[1]{\todo[inline]{#1}}
@@ -175,46 +175,4 @@
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 
-\newcommand{\benchmarkRes}[2]{
-\begin{figure}[H]
-    \makebox[\textwidth][c]{
-    \begin{tikzpicture}
-        \begin{axis}[
-            ybar=0pt,
-            label style={font=\bfseries},
-            ylabel={Logarithmic Run Time (ns)},
-            bar shift=0pt,
-            width=1\textwidth,
-            height=8cm,
-            bar width=16pt,
-            ymode=log,
-            xtick=data,
-            log basis y={2},
-            ymajorgrids,
-            xticklabel style={rotate=45, anchor=east},
-            symbolic x coords={,
-                Cry CSharp (Editor),
-                Cry C++ (Editor),
-                Cry C++ (Standalone),
-                Dotnet CSharp (debug),
-                Dotnet CSharp (release),
-                Godot CSharp (editor),
-                Godot CSharp (release),
-                Mono CSharp (debug),
-                Mono CSharp (release),
-                Unity CSharp (editor),
-                Unity CSharp (release),
-                Unreal C++ (editor),
-                VisualC++ (debug),
-                VisualC++ (release),
-                WSL C++ (debug),
-                WSL C++ (release),
-                Arcadia},
-        ]
-            \addplot table [x=Engine, y={#1}] {\graphData};
-        \end{axis}
-    \end{tikzpicture}}
-    \caption{#1 Test Results}
-    \label{fig:#2}
-\end{figure}
-}
+\input{preliminary/result-presentation.tex}

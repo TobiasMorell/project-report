@@ -1,0 +1,147 @@
+\newcommand{\benchmarkRes}[2]{
+\begin{figure}[H]
+    \makebox[\textwidth][c]{
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar=0pt,
+            label style={font=\bfseries},
+            ylabel={Logarithmic Run Time (ns)},
+            bar shift=0pt,
+            width=1\textwidth,
+            height=8cm,
+            bar width=16pt,
+            ymode=log,
+            xtick=data,
+            log basis y={2},
+            ymajorgrids,
+            xticklabel style={rotate=45, anchor=east},
+            symbolic x coords={,
+                Cry CSharp (editor),
+                Cry C++ (editor),
+                Cry C++ (standalone),
+                Dotnet CSharp (debug),
+                Dotnet CSharp (release),
+                Godot CSharp (editor),
+                Godot CSharp (release),
+                Mono CSharp (debug),
+                Mono CSharp (release),
+                Unity CSharp (editor),
+                Unity CSharp (release),
+                Unreal C++ (editor),
+                Visual C++ (debug),
+                Visual C++ (release),
+                GCC C++ (debug),
+                GCC C++ (release),
+                Arcadia},
+        ]
+            \addplot table [x=Engine, y={#1}] {\graphData};
+        \end{axis}
+    \end{tikzpicture}}
+    \caption{#1 Test Results}
+    \label{fig:#2}
+\end{figure}
+}
+
+\newcommand{\benchmarkResOverview}[3]{
+    \begin{figure}[H]
+    \makebox[\textwidth][c]{
+    \begin{tikzpicture}
+    \tikzset{every mark/.append style={scale=.5}}
+        \begin{axis}[
+            ylabel={Logarithmic Run Time (ns)},
+            width=\textwidth,
+            height=8cm,
+            ymode=log,
+            ymajorgrids,
+            xtick=data,
+            log basis y={2},
+            xticklabel style={rotate=45, anchor=east},
+            symbolic x coords={
+                Scale Vector 2D,
+                Scale Vector 3D,
+                Multiply Vector 2D,
+                Multiply Vector 3D,
+                Translate Vector 2D,
+                Translate Vector 3D,
+                Subtract Vector 2D,
+                Subtract Vector 3D,
+                Length Vector 2D,
+                Length Vector 3D,
+                Dot Product 2D,
+                Dot Product 3D,
+                Prime,
+                Array Allocation,
+                Sestoft
+            },
+            area legend,
+            legend columns = -1,
+            legend style={
+                draw=none,
+                at={(0.5,1.05)},
+                anchor=south,
+                column sep=1ex,
+                font=\tiny
+            }
+        ]
+        #3
+        \end{axis}
+    \end{tikzpicture}}
+    \caption{#1}
+    \label{fig:#2}
+\end{figure}
+}
+
+\newcommand{\benchmarkResOverviewRoofed}[3]{
+    \begin{figure}[H]
+    \makebox[\textwidth][c]{
+    \begin{tikzpicture}
+    \tikzset{every mark/.append style={scale=.5}}
+        \begin{axis}[
+            ylabel={Logarithmic Run Time (ns)},
+            width=\textwidth,
+            height=8cm,
+            ymode=log,
+            ymajorgrids,
+            xtick=data,
+            ymax=250,
+            log basis y={2},
+            xticklabel style={rotate=45, anchor=east},
+            symbolic x coords={
+                Scale Vector 2D,
+                Scale Vector 3D,
+                Multiply Vector 2D,
+                Multiply Vector 3D,
+                Translate Vector 2D,
+                Translate Vector 3D,
+                Subtract Vector 2D,
+                Subtract Vector 3D,
+                Length Vector 2D,
+                Length Vector 3D,
+                Dot Product 2D,
+                Dot Product 3D,
+                Prime,
+                Array Allocation,
+                Sestoft
+            },
+            area legend,
+            legend columns = -1,
+            legend style={
+                draw=none,
+                at={(0.5,1.05)},
+                anchor=south,
+                column sep=1ex,
+                font=\tiny
+            }
+        ]
+        #3
+        \end{axis}
+    \end{tikzpicture}}
+    \caption{#1}
+    \label{fig:#2}
+\end{figure}
+}
+
+\newcommand{\plotData}[2]{
+    \addplot[mark=*, color=#2] table [x=Test, y={#1}] {\tableData};
+    \addlegendentry{#1};
+}

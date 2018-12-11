@@ -13,9 +13,9 @@ Ray et al, cautioned their readers against interpreting their findings as defini
 
 \begin{enumerate}
     \item \dquote{Some languages have a greater association with defects than other languages, although the effect is small.}
-    \item \dquote{There is a small but significant relationship between language class and defects. Functional languages have a  smaller  relationship  to  defects  than  either  procedural  or scripting languages.}
+    \item \dquote{There is a small but significant relationship between language class and defects. Functional languages have a smaller relationship to defects than either procedural or scripting languages.}
     \item \dquote{There is no general relationship between domain and language defect proneness.}
-    \item \dquote{Defect  types  are  strongly  associated  with  languages; Some defect type like memory error, concurrency errors also depend on language primitives.  Language matters more for specific categories than it does for defects overall.}
+    \item \dquote{Defect types are strongly associated with languages; Some defect type like memory error, concurrency errors also depend on language primitives. Language matters more for specific categories than it does for defects overall.}
 \end{enumerate}
 
 This examination, of the impact of language selection, suggests that language choice affects project quality as well as shedding light on how the project is affected. The next question is what languages are most often used in game development? To answer this question we conducted a small language survey of game, and game related, repositories on Github.
@@ -32,7 +32,7 @@ Due to restrictions in Github's language \ac{API}, lines of code include white s
 \subsubsection{Results}
 From only looking at the popular games list, it was found that C++ is by far the most dominant language, with more than 3 billion lines as seen in \figureref{loc-top10}. The average number of languages used per repository is 3.11.
 
-The Protogame repository by RedpointGames has a whopping 48 languages in use. It also contains different tools, such as a cross platform build tools, an \ac{API} for use with MonoGame and much more. Amazon's Lumberyard engine has the most code with a total of lines 358.943.117 lines of code, which is mostly found in Python files. Followed by a lot of C++.
+The Protogame repository by RedpointGames has 48 languages in use. It also contains different tools, such as a cross platform build tools, an \ac{API} for use with MonoGame and more. Amazon's Lumberyard engine has the largest codebase with a total of lines 358.943.117 lines of code, which is mostly found in Python files. Followed by a lot of C++.
 
 \begin{figure}[H]
 \begin{tikzpicture}
@@ -67,3 +67,4 @@ The Protogame repository by RedpointGames has a whopping 48 languages in use. It
 \label{fig:loc-top10} 
 \end{figure}
 
+These findings are mostly in line with a survey of game development ads posted on Gamasutra.com \cite{gamasutra:mostUsedProgrammingLanguage}. Here the top four languages in game development jobs are C++, C\#, Java and Lua. The high position of Lua could be caused by the closer connection to game development industry or the sample size of 46 ads.

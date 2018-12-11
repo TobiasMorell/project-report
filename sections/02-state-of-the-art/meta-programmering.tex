@@ -1,5 +1,21 @@
-\section{Meta-Programming}
-Meta programming is a programming technique in which programs have the ability to treat programs as data. Meta programming can be used to move computation from run-time to compile-time, to generate code using compile time computations, and to enable self-modifying code \cite{chlipala2010ur} \cite{czarnecki2000generative}. It can also move computations from compile-time to run-time, which for instance may be used to do run-time code generation. Meta-programs can be anything from compilers, interpreters, type checkers, theorem provers, program generators, transformation systems, and program analysers.
+\section{Meta-Programming} \label{sec:meta-programming} 
+Meta programming is a programming technique in which programs have the ability to treat programs as data. Meta programming can be used to move computation from run-time to compile-time, to generate code using compile time computations, and to enable self-modifying code \cite{chlipala2010ur} \cite{czarnecki2000generative}. This can be useful in game engines as well, therefore we looked into their use in game development.
+
+Our research failed to find any literature on on the subject, therefore in order to examine the use of macros we initially examined Unreal Engine. We chose this engine because it's popular, open source and written in C++. However, we decided to examine more open source game engines, three in total: Epic Games' Unreal Engine\footnote{Unreal Engine Github repository: \url{https://github.com/EpicGames/UnrealEngine}}, Godot\footnote{Godot Github repository: \url{http://google.com}} and Amazon's Lumberyard\footnote{Lumberyard Github repository: \url{http://google.com}}.
+
+In each of the three Github repositories, we isolated the engine code (all three come with an editor as well). We wrote a small program in C\# that searches for all files with the extensions .c, .cpp, .h or .hpp. In these files we counted the number of \ttt{\#define}s, \ttt{\#ifdef}s and \ttt{\#if}s. The program is listed in \appendixref{unreal:macros}
+
+\tableref{macros:in:ges} lists the number of lines of source code in each engine along with the number of macros. These results indicate that macros are in fact being used in game engine development (though not broadly applicable due to the limited data set).
+
+\makeTable{{|l|c|c|c|c|}
+    \hline
+    \textbf{Engine} & \textbf{LoC} & \textbf{\ttt{\#define}s} & \textbf{\ttt{\#ifdef}s} & \textbf{\ttt{\#if}s}  \\
+    Unreal Engine   & 15,027,722    & 350,300 & 51,945  & 171,914 \\
+    Godot           & 1,590,009     & 25,809  & 6323    & 18,285 \\
+    Lumberyard      & 2,345,289     & 28,885  & 3360    & 16,403 \\
+    \hline}{Macro usage in open source game engines}{macros:in:ges}
+
+Meta-programming can move computations from compile-time to run-time, which for instance may be used to do run-time code generation. Meta-programs can be anything from compilers, interpreters, type checkers, theorem provers, program generators, transformation systems, and program analysers.
 
 In all of these cases, the meta-program manipulates a data object that represents the program itself \cite{sheard2001accomplishments}. When talking about types of meta-programs, there are two sub categories, program generators and program analysers\cite{pasalic2004role}. A program generator solves problems by generating a program that solves a particular instance of the problem. Usually the generated program is "specialised" for a particular problem instance and uses less resources than a general purpose, non-generated solution \cite{sheard2001accomplishments}.
 
@@ -24,13 +40,13 @@ Meta-programming provides various benefits to users. Some of the these benefits 
     Translating one object-program to another object-program. The source and target language might be the same, but it not required. Examples of translators are compilers and program transformation systems\cite{sheard2001accomplishments}.
 
     \item[\textbf{Reasoning}]
-    Meta-programming allows developers to reason about a object-program. If a object-program is written in a formal language, an analysis can discover properties of the object-program. These properties can be used to improve performance, provide assurance about the object-program behaviour, or validate meaning preserving transformations. Examples of reason meta-programs can be analysis such as flow analysis and type checkers.
+    Meta-programming allows developers to reason about a object-program. If an object-program is written in a formal language, an analysis can discover properties of the object-program. These properties can be used to improve performance, provide assurance about the object-program behaviour, or validate meaning preserving transformations. Examples of reason meta-programs can be analysis such as flow analysis and type checkers.
 
     \item[\textbf{Mobile code}]
-    Recently meta-programming has been used as a means for program transportation. Instead of using networks to bring data to programs, networks are used to bring the program to the data. Due to security concerns, intentional representations of programs are transported across the network\cite{Hornof:1999:CCR:609149.609203},\cite{Thibault:1998:SEA:829523.830979}. These representations can be formally verified that they do not compromise the integrity of the host machines they run on. The transported programs are object-programs\footnote{Object programs can be represented in various formats including text and intermediary formats such as Java Byte code.} and the analyser are meta-programs.
+    Recently meta-programming has been used as a means for program transportation. Instead of using networks to bring data to programs, networks are used to bring the program to the data. Due to security concerns, intentional representations of programs are transported across the network\cite{Hornof:1999:CCR:609149.609203},\cite{Thibault:1998:SEA:829523.830979}. These representations can be formally verified that they do not compromise the integrity of the host machines they run on. The transported programs are object-programs\footnote{Object programs can be represented in various formats including text and intermediary formats such as Java Byte code.} and the analysers are meta-programs.
 \end{description}
 
-The reason meta-programming systems are useful, is because they make manipulation of objects and object programs easier. It can be easy to use and understand by the programmer, provide high-level abstraction that captures the details of both the object-language and the patterns used by the meta-program\cite{sheard2001accomplishments}.
+The reason meta-programming systems are useful, is because they make manipulation of objects and object-programs easier. It can be easy to use and understand by the programmer, provide high-level abstraction that captures the details of both the object-language and the patterns used by the meta-program\cite{sheard2001accomplishments}.
 
 
 

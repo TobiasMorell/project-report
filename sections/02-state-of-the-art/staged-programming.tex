@@ -1,5 +1,7 @@
 \section{Staged Programming}
-In this section staged programming is discussed. Some staged programming technologies are also explored. Staged programming comes in many forms ranging from C++ Templates\footnote{Note that while C++ Templates, are meta programming, they are technically not staged programming. But we believe that they make a good example anyway.} \cite{c++:templates} to MetaML \cite{sheard1998using}. Other initiatives have also attempted to implement staged programming in other languages, such as Haskell \cite{sheard2002template}.
+In this section staged programming is discussed. Some staged programming technologies are also explored. These techniques are used in John Blow's programming language project: Jai \cite{youtubeJonathanBlow}. The idea is that some computation can be moved to compile time as well as generating platform-specific code. In Jai any function can be called at compile-time \cite{github:jaiPrimer}, thus achieving staged programming without macros.
+
+Staged programming comes in many forms ranging from C++ Templates\footnote{Note that while C++ Templates, are meta programming, they are technically not staged programming. But we believe that they make a good example anyway.} \cite{c++:templates} to MetaML \cite{sheard1998using}. Other initiatives have also attempted to implement staged programming in other languages, such as Haskell \cite{sheard2002template}.
 
 The goal of staged programming is to create languages that provide constructs that efficiently and concisely express common functionality and impose little to no overhead in computation time. There are also other approaches that pursue similar goals, such as Scrap Your Boilerplate \cite{lammel2003scrap} or Lightweight Modular Staging \cite{rompf2010lightweight}.
 
@@ -21,7 +23,7 @@ When a template is instantiated in the surrounding code (for instance \ttt{Max\t
 Templates can also be specialised to provide different implementations in case of certain generic types. This is useful, but it will not be discussed here, as it is does not require additional stages beyond those already discussed.
 
 \subsection{C/C++ Macros}
-Both the \ac{GCC} has a pre-processor that supports the definition of macros \cite{c:macros}. There are two types of macros; object-like \cite{c:macros:object} and function-like \cite{c:macros:function}. Object-like macros are often used to give symbolic names to numeric constants. An example of an object-like macro is given in \lstref{c:object:macro}. When the pre-processor encounters \ttt{PI} in the code it will be replaced by the number \ttt{3.14159}. The comment after the line shows what the code looks like after the pre-processor has been run.
+\ac{GCC} has a pre-processor that supports the definition of macros \cite{c:macros}. There are two types of macros; object-like \cite{c:macros:object} and function-like \cite{c:macros:function}. Object-like macros are often used to give symbolic names to numeric constants. An example of an object-like macro is given in \lstref{c:object:macro}. When the pre-processor encounters \ttt{PI} in the code it will be replaced by the number \ttt{3.14159}. The comment after the line shows what the code looks like after the pre-processor has been run.
 \begin{lstlisting}[label={lst:c:object:macro}, caption={C/C++ object-like macro}, style={C}]
 #define PI 3.14159
 
@@ -75,20 +77,7 @@ int affect_variables() {
 }
 \end{lstlisting}
 
-Our research failed to find any literature on whether or not macros are used in gameplay- or engine-programming. In order to examine the use of macros we examine Unreal Engine because it's very popular, it is open source and written in C++.
-
-We decided to examine three open source game engine; Epic Games' Unreal Engine\footnote{Unreal Engine Github repository: \url{https://github.com/EpicGames/UnrealEngine}}, Godot\footnote{Godot Github repository: \url{http://google.com}} and Amazon's Lumberyard\footnote{Lumberyard Github repository: \url{http://google.com}}.
-
-In each of the three Github repositories, we isolated the engine code (all three come with an editor as well). We wrote a small program in C\# that searches for all files with the extensions .c, .cpp, .h or .hpp. In these files we counted the number of \ttt{\#define}s, \ttt{\#ifdef}s and \ttt{\#if}s. The program is listed in \appendixref{unreal:macros}
-
-\tableref{macros:in:ges} lists the number of lines of source code in each engine along with the number of macros. These results indicate that macros are in fact being used in game engine development (though not broadly applicable due to the limited data set). From the qualitative point-of-view, we briefly examined what the macros are used for in Unreal Engine and observed that they were used to configure logging, along with build- and platform-specific behaviour (see \lstref{unreal:macro}).
-\makeTable{{|l|c|c|c|c|}
-    \hline
-    \textbf{Engine} & \textbf{LoC} & \textbf{\ttt{\#define}s} & \textbf{\ttt{\#ifdef}s} & \textbf{\ttt{\#if}s}  \\
-    Unreal Engine   & 15,027,722    & 350,300 & 51,945  & 171,914 \\
-    Godot           & 1,590,009     & 25,809  & 6323    & 18,285 \\
-    Lumberyard      & 2,345,289     & 28,885  & 3360    & 16,403 \\
-    \hline}{Macro usage in open source game engines}{macros:in:ges}
+In \secref{meta-programming} we examined the use of macros in the Unreal Engine and found they where used extensively. We briefly examined what some of the macros are used for in and observed that they were used to configure logging, along with build- and platform-specific behaviour (see \lstref{unreal:macro}).
 
 \begin{lstlisting}[label={lst:unreal:macro}, caption={A macro found in ModuleManager.h in Unreal Engine}, language={C}]
 #if PLATFORM_DESKTOP

@@ -1,10 +1,11 @@
+\documentclass[12pt,a4paper,openright]{report}
 \input{preliminary/preamble.tex}% package inclusion and set up of the document
 \input{preliminary/hyphenations.tex}%
 \input{preliminary/macros.tex}% my new macros
 
 \begin{document}
 % Sætter vores listing environment til C# kode ordentligt op.
-\lstset{basicstyle=\tiny, tabsize = 2, xleftmargin = 5pt, keepspaces = true, numbersep = 5pt }
+%\lstset{basicstyle=\tiny, tabsize = 2, xleftmargin = 5pt, keepspaces = true, numbersep = 5pt }
 %frontmatter
 
 \pagestyle{empty} %disable headers and footers
@@ -23,7 +24,7 @@
 \input{sections/00-setup/preface.tex}
 
 %mainmatter
-\pagenumbering{arabic} %use arabic page numbering in the mainmatter https://v2.overleaf.com/project/5b92343185248f122f26f36b
+\pagenumbering{arabic} %use arabic page numbering in the mainmatter
 \input{sections/00-setup/00-setup.tex}
 \input{sections/01-introduction/introduction.tex}
 \input{sections/02-state-of-the-art/state-of-the-art.tex}

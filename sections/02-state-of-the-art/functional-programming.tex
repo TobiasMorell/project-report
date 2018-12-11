@@ -1,5 +1,5 @@
-\section{Functional Programming} \label{sec:functional-programming} \todo{Is this better?}
-In this section functional programming and it's central concepts are explored. An important distinction to keep in mind is the difference between a functional programming language and the discipline of functional programming. Functional programming languages such as, Haskell, Scheme or Standard ML are languages developed specifically for functional programming (the discipline). The discipline, however, is a paradigmatic methodology \cite{benton2016improving}.
+\section{Functional Programming} \label{sec:functional-programming}
+In this section the functional programming paradigm and it's central concepts are explored. An important distinction to keep in mind is the difference between a functional programming language and the discipline of functional programming. Functional programming languages such as, Haskell, Scheme or Standard ML are languages developed specifically for functional programming (the discipline). The discipline, however, is a paradigmatic methodology \cite{benton2016improving}.
 
 Multi-paradigm programming languages such as C\#, Java or JavaScript support functional programming. The distinguishing features of functional programming are \cite{hudak1989conception}:
 \begin{itemize}
@@ -76,6 +76,11 @@ The main argument for disallowing impure functions is that reliance on state con
 In order to limit or in some cases (Haskell) disallow mutability, functional programming languages restrict assignment. In the Scheme programming language assignment is available but uses special syntax to signify the impure action. In most cases where assignment would have occurred in an equivalent imperative language, functional languages use binding instead \cite{milewski:pure-functions-laziness-io-monads}. The difference between assignment and binding is that binding does not place data in a memory cell with an alias, but rather associates some data with a name. A binding cannot be changed once it has been made.
 
 \subsection{List Comprehensions and Streams}
-List comprehension is a list building notation used in several languages. It is based on set builder notation from set theory \cite{rosen2011discrete}. The notation is used in mathematics, \acp{GPL}, imperative as well as functional programming languages. However, functional languages can utilise this concept to create infinite lists or streams, of arbitrary content.
+List comprehension is a list building notation used in several languages. It is based on set builder notation from set theory \cite{rosen2011discrete}. The notation is used in mathematics, general purpose programming languages, imperative as well as functional programming languages. However, functional languages can utilise this concept to create infinite lists or streams, of arbitrary content.
 
 A number of languages, such as C\#, have implemented list comprehensions or similar constructs. \btc{nogle kode eksempler ville måske være godt}
+
+\subsection{Functional Paradigm in Game Development} \label{sec:functional-game-dev}
+The concepts examined in this section are also supported in some imperative languages and can be emulated in most. In this section, the functional programming paradigm deployed in imperative languages, is examined. As mentioned earlier, Carmack is a proponent of the functional paradigm in game development \cite{gamasutra:c++functional}, this is echoed by other developers such as Bryan Edds, the developer of NU \cite{edds2016whyFunctional}. Furthermore, games have also been used to teach students about functional programming \cite{maggiore2009game}.
+
+Carmack explains how developers can employ the functional paradigm in C++. This is not enforced by the compiler, but rather the developers themselves. Purity is a focal point of this approach. Carmack argues that functions need not be completely pure, instead every step towards purity improves the code. Purity is a goal to seek rather then an unbreakable law, which works well in the game development context where some side effects cannot be avoided.

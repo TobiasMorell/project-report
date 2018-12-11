@@ -1,6 +1,7 @@
 \section{Test Setup}
+In this section we discuss the foundation for the microbenchmarks. We discuss first an important consideration to take when comparing languages, warmup time for \ac{JIT}-compiled and interpreted languages and thereby classify the different types of benchmarks that exist. Afterwards we discuss the platforms that are put to test and the system on which the tests were executed.
 
-\subsection{VM Warmup}\label{sec:sub:vmwarmup}
+\subsection{Virtual Machine Warmup}\label{sec:sub:vmwarmup}
 When making benchmarks it is important to take into account different factors that might affect the test's speed.
 The example in this section will be the \textit{warmup} of virtual machines \cite{vmwarmup}.
 The virtual machines that use \ac{JIT} compilation might recompile parts of the program that is run repeatedly, resulting in a speedup.
@@ -8,25 +9,24 @@ In \cite{vmwarmup} the authors test the hypothesis: \dquote{Small, deterministic
 To test this hypothesis they constructed some software to aid them in benchmarking called \textit{Krun}.
 Krun manages the machine while the benchmarks are running, doing things such as: stopping userland daemons and network cards, rebooting the machine before every process execution and ensuring a consistent temperature before execution.
 
-They found out that only 43.5\%, 43.4\% and 30\% respectively, for three different systems actually provide \squote{good} warmup. The rest of processes either slowdown, never reach a steady state of performance or some mix of those two.
+\btc{Hvad betyder disse tal? Hvem er 'They'?}They found out that only 43.5\%, 43.4\% and 30\% respectively, for three different systems actually provide \squote{good} warmup. The rest of processes either slowdown, never reach a steady state of performance or some mix of those two.
 
 This means that counting on \acs{VM}s to speed up during execution is risky.
 The startup time of \acs{VM}s should also be taken into consideration, as the startup time may reach as high as several seconds for some \acs{VM}s.
 
-Due to this uncertainty with \acs{JIT}s we make use of macrobenchmarks, in the hopes that they give consistent results.
+In order to alleviate this uncertainty with \acs{JIT}s we use macrobenchmarks. The bigger tests should provide a more realistic use case and therefore more realistic data.\btc{Dette afsnit bør komme efter 'Types of Benchmark'}
 
 \subsection{Types of Benchmark}
 In this report we concern ourselves with three types of benchmarks; micro-, macro- and application-benchmarks. This section provides the definitions of these benchmarks. In general benchmarks are tests run on computer programs, that yield some metric. This metric can be memory usage, run time or throughput \cite{Fleming:1986:LSC:5666.5673}. In this report we divide benchmarks into three categories that are distinguished by the size of the program under test.
 
 \begin{description}
-    \item[Micro] benchmarking, also known as component benchmarking, has been partially covered in \secref{micro-benchmarking}, however \secref{micro-benchmarking} focuses on how to micro-benchmark rather then what micro-benchmarking is. We have defined micro-benchmarks as \textit{a benchmark testing a single and minimal unit of functionality and excluding start-up time}. In this case unit of functionality is a single function, object, or equivalent programming construct, of small size. The goal is to test the performance of the single unit.
+    \item[Micro] benchmarking, also known as component benchmarking, has been partially covered in \secref{micro-benchmarking}, however \secref{micro-benchmarking} focuses on how to microbenchmark rather then what microbenchmarking is. We have defined microbenchmarks as \textit{a benchmark testing a single and minimal unit of functionality and excluding start-up time}. In this case unit of functionality is a single function, object, or equivalent programming construct, of small size. The goal is to test the performance of the single unit.
     \item[Macro] is defined as \textit{a benchmark testing multiple units of functionality and excluding start-up time}. The main difference between micro and macro benchmarking is the number of functional units. The goal of macro benchmarking is to test the performance of a set of connected units.
     \item[Application] benchmarking, also known as real program benchmarking, is the largest category of benchmarks. They are defined as \textit{a benchmark testing a full application, consisting of multiple units of functionality and including start-up time}
 \end{description}
 
 \subsection{Platforms}
-\todo{Add a section with tables over game engines and their classifications as well as the languages used. The languages should be classified in accordance with \ref{sec:gameplay:programming}}
-This experiment examines C++, C\# and Clojure along with four popular game engines that support the languages. As a baseline comparison, the same tests are run natively on the machine. For C++ CryEngine and Unreal Engine were the engines of choice. For C\# the choices fell on Unity and Godot (the C\# microbenchmarks were also implemented in CryEngine). For Clojure, we used a Unity plugin called Arcadia \cite{arcadia:github}. For the native baseline, both the Mono and .NET Core runtime was tested for C\#. For C++ Microsoft's Visual C++ compiler was tested as it is supported in Windows. \ac{GCC} cannot be ignored when talking about C++, but the problem is that it requires a Unix system. There are a couple of choices here; MinGW, CygWin or \ac{WSL}. As \ac{WSL} is the most convenient platform to setup, we chose that one (the choice of \ac{WSL} is discussed in \secref{micro:threats}). Furthermore, the list of platforms and engines can be seen in \tableref{sut}
+This experiment examines C++, C\# and Clojure along with four popular game engines that support the chosen languages. As a baseline comparison, the same tests are run natively on the machine. For C++, CryEngine and Unreal Engine were the engines of choice. For C\#, we chose Unity and Godot and CryEngine. For Clojure, we used a Unity plugin called Arcadia \cite{arcadia:github}, which gives access an interpreted version of Clojure in Unity. For the native baseline, both the Mono and .NET Core runtime where tested for C\#. For C++, Microsoft's Visual C++ compiler was tested as it is supported in Windows. \ac{GCC} cannot be ignored when talking about C++, but the problem is that it requires a Unix-like system. There are a couple of choices here; MinGW, CygWin or \ac{WSL}. As \ac{WSL} is the most convenient platform to setup, we chose that one (the choice of \ac{WSL} is discussed in \secref{micro:threats}). Furthermore, the list of platforms and engines can be seen in \tableref{sut}
 
 \makeTable{
 {| l | c | c |}
@@ -45,20 +45,7 @@ Arcadia (Clojure) & \checkmark & \texttimes \\\hline
 }{Systems under Test}{sut}
 In the ideal case all boxes in \tableref{sut} would be ticked, but due to complications with the build process, we were unable to test Unreal in release mode along with CryEngine (C\#) in release mode. As for Arcadia, it is in an early stage of development, and we were thus unable to build a functioning release build.
 
-\subsubsection{Functional Clojure}
-The Clojure language is a LISP-style functional language that runs on the \ac{JVM} \cite{clojure:about}. Arcadia uses a version of Clojure that is ported to the .NET virtual machine and is thus compatible with Unity. This allows the use of functional programming in Unity. However, some of the microbenchmarks that were chosen here is hard to implement in a purely functional approach. First and foremost, several of the tests require the use of mutable variables. In order to satisfy this we use the state management system provided Arcadia. This allows the use of mutable variables stored as a state for a specific object in Unity. 
-We suspect that using this introduces a large overhead, but were unable to find sources that says so.
-We also make use of the \texttt{do} keyword in Clojure, which allows sequential execution of functions, further distancing this test from a functional approach.
-
-Arcadia is integrated with Unity in a way that allows the use of Unity's .NET libraries in Clojure.
-These are used in several places, but we are not certain if there is a performance overhead by using them.
-Their usage, again promote using Clojure in a non-functional manner. 
-
-With these arguments in mind, we make no claim to use Clojure 'correctly' or in a truly functional way.
-
-\subsection{Classifications}
-
-\subsection{System Setup}
+\subsubsection{System Setup}
 The system on which the tests were executed runs Windows 10 Pro and its specifications are listed in \tableref{sys-specs}.
 
 \makeTable{
@@ -75,3 +62,38 @@ Memory Size & 16 & GiB  \\ \hline
 Memory Speed & 1600 & MHz \\ \hline
 Memory Type &  \multicolumn{2}{| l |}{DDR3L 1600} \\ \hline
 }{System Specifications}{sys-specs}\footnotetext{Logical cores are sometimes called threads. However logical cores is used here to avoid confusion with the software concept; threads, which is distinct from hardware threads.}
+
+\subsubsection{Functional Clojure} \todo{This section comes out of nowhere. It needs a better lead-in or should be moved somewhere else.}
+The Clojure language is a LISP-style functional language that runs on the \ac{JVM} \cite{clojure:about}. Arcadia uses a version of Clojure that is ported to the .NET virtual machine and is thus compatible with Unity and is interpreted. This allows the use of functional programming in Unity. However, some of the microbenchmarks that were chosen here are hard to implement with a pure approach. First and foremost, several of the tests require the use of mutable variables. In order to satisfy this we use the state management system provided by Arcadia. This allows the use of mutable variables stored as a state for a specific object in Unity. 
+We suspect that using this introduces a large overhead, but were unable to find sources that says so.
+We also make use of the \texttt{do} keyword in Clojure, which allows sequential execution of functions, further distancing this test from a functional approach.
+
+Arcadia is integrated with Unity in a way that allows the use of Unity's .NET libraries in Clojure.
+These are used in several places, but we are not certain if there is a performance overhead by using them.
+Their usage, again promote using Clojure in a non-functional manner. 
+
+With these arguments in mind, we make no claim to use Clojure 'correctly' or in a truly functional way.
+
+\subsection{Classifications}
+In this section we will classify the languages of the different game engines according to the classification presented in \cite{5962102}, which was summarised in \secref{gameplay:programming}. We do not classify the languages that are in beta at the time of writing. The classifications are displayed in \tableref{benchmark:classification}.
+
+The classification system presented in \cite{5962102} classify the properties of the languages used in the scripting system. As we have seen previously in the report, many scripting systems have been replaced with C\#, meaning that all scripting systems presented here would be classified as regular scripts. We therefore adapt the definition to instead examine the properties of the game engines' scripting system (i.e. the classes declared by the game engine, the game engine's \ac{API} and intended use of the scripting language). 
+
+\makeTable{
+{| l | l | l | P{.4\textwidth} |}
+\hline
+\textbf{Engine} & \textbf{Language} & \textbf{Classification} & \textbf{Reasoning} \\\hline
+Unity           & C\#       & Regular Script & Coroutines can run code outside \unity's update events. \\ \hline
+Unreal Engine   & C++       & Event Oriented & Custom events, but all code runs with Unreal Engine's \ttt{Tick}. \\ \hline
+Unreal Engine   & Blueprint & Event Oriented & Custom events, but all code runs with Unreal Engine's \ttt{Tick}\\ \hline
+CryEngine       & C\#       & Event Oriented & Custom events, but all code run with CryEngine's \ttt{OnUpdate}. \\ \hline
+CryEngine       & C++       & Event Handler & No language support for events, but all code runs with CryEngine's \ttt{ProcessEvent}. \\ \hline
+Godot           & C\#       & Event Oriented & Godot uses signals to parse messages between components, but all signals are sent from Godot's \ttt{\_Process}. \\ \hline
+Godot           & GdScript  & Regular Script & Same as for C\#, but GDScript supports threads that can run functions asyncronously from the game loop. \\ \hline
+Godot           & NativeScript & Initialisation & NativeScript may only be used to import compiled code written in e.g. C or C++. \\ \hline
+}{Scripting system classifications, categories taken from \cite{5962102}}{benchmark:classification}
+
+
+An example of a game engines' \ac{API} towards the language is \unity's \ttt{MonoBehaviour}s. \ttt{MonoBehaviour}s in \unityspace may declare a set of methods that are invoked while the game is running \cite{unity:monobehaviour}. Examples of these are \ttt{Start}, \ttt{Update} and \ttt{OnDestroy} that are called when respectively when the game starts, each time a frame is generated and when the MonoBehaviour is removed from the game. Unity also supports events declared in scripts \cite{unity:event}. Other scripts may subscribe to these events to be notified when they occur. These, unlike the classification in \cite{5962102}, are not imported into the game engine when the game starts, but are rather handled from the scripting system.
+
+The reason \unityspace ended in the regular script category is because of \ttt{Coroutines} \cite{unity:coroutines}. \ttt{Coroutines} are used to carry out tasks that happen over a period of time or periodically without cluttering the \ttt{Update}-method. By default, a coroutine is called once every frame, but there exists constructs that allow the programmer to specify that the coroutine be called more rarely (e.g. every fifth frame or every 0.5 seconds). We do not classify this as regular scripts, because of their tight connection with the game loop and the fact that they are not stand-alone scripts.

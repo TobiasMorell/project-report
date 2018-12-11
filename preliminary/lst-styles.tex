@@ -10,10 +10,12 @@
 %%% This should not set basicstyle
 \lstset{
     basicstyle=\ttfamily\scriptsize, 
-    xleftmargin = -15pt,
+    tabsize = 2,
+    xleftmargin = 5pt,
     numbers = left,
-    numbersep = -35pt,
+    numbersep = 5pt,
     frame=single,
+    keepspaces=true,
     framexleftmargin=15pt,
     captionpos=b
 }
@@ -73,7 +75,7 @@
     basicstyle=\ttfamily\scriptsize,
     morekeywords={let, new, match, with, rec, open, module, namespace, type, of, member, and, for, while, true, false, in, do, begin, end, fun, function, return, yield, try, mutable, if, then, else, cloud, async, static, use, abstract, interface, inherit, finally },
     otherkeywords={ let!, return!, do!, yield!, use!, var, from, select, where, order, by },
-    keywordstyle=\color{bluekeywords},
+    keywordstyle=\bfseries,
     sensitive=true,
 	breaklines=true,
     xleftmargin=-1cm,
@@ -237,4 +239,24 @@ with-meta,with-open,with-out-str,with-precision,xml-seq,zero?,zipmap
     showtabs=false,                  
     tabsize=2,
     language=C
+}
+
+\lstdefinestyle{cpp}{
+    commentstyle=\color{gray},
+    keywordstyle=\color{blue!80},
+    numberstyle=\tiny\color{gray},
+    stringstyle=\color{green!20},
+    basicstyle=\footnotesize,
+    morekeywords={va\_start, va\_arg, va\_copy, va\_end, va\_list},
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C++
 }

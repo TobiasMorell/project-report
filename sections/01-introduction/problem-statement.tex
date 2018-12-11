@@ -1,18 +1,31 @@
 \section{Problem Statement}
 In this section we will formulate a problem that this project will attempt to solve. The problem will be expressed as an exploratory question and a set of sub-questions. These will direct the research of this project throughout the remainder of this report. Research will be divided into the \ac{SotA} section and the wider background research section.
 
-The research of the \ac{SotA} will focus on the game development and how it is currently conducted. The tools used are examined in particular, here the tools are programming languages and game engines. Thus the focal point is which languages are used and what are their properties, as well as which game engines are sued. Furthermore, understanding why game engines are used is examined as well.
+As mentioned in the previous section, a number of prominent game developers have expressed a need for the functional programming paradigm in game development. The sentiment expressed is that the paradigm could be useful, but it must account for the stateful nature of games.
 
-In the background research section the focus will be on the wider domain. Here related papers, methodology and anything else relevant to the field and this project is examined. Tools used in game development and game development literature, which is not covered in \ac{SotA}, is covered here. Furthermore, due to the number of available tools, we need some methodology to formally compare available tools. Therefore some comparison methodology will also be covered here.
+\quoteWithCite{No matter what language you work in, programming in a functional style provides benefits. You should do it whenever it is convenient, and you should think hard about the decision when it isn't convenient.}{John Carmack}{gamasutra:c++functional}
 
-Furthermore, we have found that engines are so complex and restrictive, that they practically are a separate language. This hypothesis is assumed going forward in the report. Given the inquiry documented above, we pose the following problem statement:
+\quoteWithCite{Purely Functional is the right default [...]\\Imperative constructs are vital features that must be exposed through explicit effects-typing constructs}{Tim Sweeney}{theNextMainstreanProgrammingLanguage}
+
+In contrast, popular opinion have wildly varying views on functional programming. The author of \cite{pop:functional:sucks} argues that functional programming \dquote{sucks} because it is slow. He backs this claim up be stating that the speed of functional- and imperative-style programming has aligned in node.js V8, not because functional-constructs have become faster, but because imperative constructs have become slower. This stands in opposition with the highest rated answer to the StackOverflow question in \cite{pop:functional:slow}, where the author argues that functional programming is slower due to a historical commitment to allocating objects on the heap and focusing on fast garbage collectors, rather than figuring out which objects may be stack allocated and which may be heap allocated. Furthermore, he also argues that functional programs are slower than their C counter-parts, because implementing large-scale, multicore benchmarks, in which he claims that functional languages will dominate, in C is simply not possible.
+
+Finally the author of \cite{pop:functional:definition}, argue that programs in pure functional languages are easier to understand, because side-effects have a tendency of \textit{\dquote{changing things under your feet}}. The author recognises the need to sometimes use stateful constructs in pure programming languages, because of their performance advantage. Rather than completely disallowing impurity, he argues that impurity allow the developers to reason about which parts of the program should be backed with more quality assurance.
+
+As such, we see that Carmack's and Sweeny's positive attitude is not necessarily aligned with popular opinion. One of the main claims being, that functional programming adds a performance overhead that is simply not tolerable. On the positive side, functional programming should be simpler to comprehend and result in faster development. Whether these claim are true, in a game development context, will be explored further in this question.
+
+The research of the \ac{SotA} will focus on game development and how it is currently conducted. The tools are examined in particular, hereby meaning the programming languages and game engines. Thus the focal point is which languages are used and what are their properties are, as well as which game engines are used. Furthermore, the functional programming paradigm is examined to ascertain its distinguishing features.
+
+In the background research section the focus will be on the wider domain. Here related papers, methodology and anything else relevant to the field and this project is examined. Tools used in game development and game development literature, which is not covered in \ac{SotA}, is covered here. A number of functional game engines are examined and small examples are implemented. Furthermore, due to the number of available tools, we need some methodology to formally compare available tools. Therefore some comparison methodology will also be covered here.
+
+Furthermore, we have found that engines are so complex and restrictive, that they practically are separate languages. This hypothesis is assumed going forward in the report. Given the inquiry documented above, we pose the following problem statement:
 
 \begin{center}
     \begin{enumerate}
-        \item \textbf{How can game engines/languages be compared?}
-        \item How can performance engine/language be reliably measured?
+        \item \textbf{How can the functional paradigm be used in game development?}
+        \item Does the functional paradigm incur performance overhead?
+        \item How can performance of such tools be reliably measured?
         \item Are game engines comparable with programming languages?
         \item What metrics are most relevant for comparison?
-        \item Which metrics of engines/languages are equivalent and which are not?
+        \item Which metrics of tools are equivalent and which are not?
     \end{enumerate}
 \end{center}

@@ -1,4 +1,4 @@
-\chapter{Micro-Benchmarking Results} \label{app:benchmark-res}
+\chapter{Microbenchmarking Results} \label{app:benchmark-res}
 
 \begin{table}[H]
     \sisetup{round-mode=places}
@@ -17,6 +17,21 @@
     \label{tab:benchmark:debug-results}
 \end{table}
 
+\benchmarkResOverview{Graph over execution times in C++ and C\#}{benchmark:release-results-unroof}{
+    \plotData{Dotnet CSharp (release)}{blue}
+    \plotData{Mono CSharp (release)}{red}
+    \plotData{Visual C++ (release)}{violet}
+    \plotData{GCC C++ (release)}{green}
+}
+
+\benchmarkResOverview{Graph over execution times for C\# in different game engines}{gameengines:cs-unroof}{
+    \plotData{Cry CSharp (editor)}{blue}
+    \plotData{Dotnet CSharp (release)}{red}
+    \plotData{Godot CSharp (release)}{violet}
+    \plotData{Mono CSharp (release)}{green}
+    \plotData{Unity CSharp (release)}{orange}
+}
+
 \benchmarkRes{Scale Vector 2D}{scale2d-res}
 \benchmarkRes{Multiply Vector 2D}{multiply2d-res}
 \benchmarkRes{Multiply Vector 3D}{multiply3d-res}
@@ -31,3 +46,28 @@
 \benchmarkRes{Sestoft}{sestofttest-res}
 \benchmarkRes{Array Allocation}{memtest-res}
 \benchmarkRes{Prime}{prime100-res}
+
+\begin{figure}[H]
+    \makebox[\textwidth][c]{
+    \begin{tikzpicture}
+    \tikzset{every mark/.append style={scale=.5}}
+        \begin{axis}[
+                width=1.25\textwidth, 
+                height= 8cm,
+                ylabel={Run time in microseconds},
+                xlabel={Iteration No.},
+                xmin = 0,
+                xmax = 130,
+                ymajorgrids,
+                legend columns = -1,
+                area legend,
+                legend style={draw=none,at={(0.5,1.05)},anchor=south, column sep=1ex}
+            ]
+            \addplot[mark=*, color=red] table [x={Iteration No.}, y=Unreal] {\macroData};
+            \addplot[mark=*, color=blue] table [x={Iteration No.}, y=Unity] {\macroData};
+            \legend{Unreal, Unity}
+        \end{axis}
+    \end{tikzpicture}}
+    \caption{Wall clock-time for each invocation of the \ttt{World.Iterate}-method}
+    \label{fig:macro-results-unroofed}
+\end{figure}

@@ -1,17 +1,17 @@
-\section{Micro-Benchmarks}
+\section{Microbenchmarks} \label{sec:microbenchmarks}
 In this experiment we examine four different game engines; Unreal Engine, Unity, CryEngine and Godot. The following research questions formulate the foundation of the experiment:
 \begin{itemize}
-    \item Are compiled languages (in this case C++) in fact faster than their interpreted and \ac{JIT}-compiled counterparts?
-    \item Does a game engine's runtime have a negative effect on a game engines performance in comparison to its native performance\footnote{By native we mean the language in it's default runtime}?
+    \item Are compiled languages (C++) in fact faster than their interpreted and \ac{JIT}-compiled (C\#) counterparts?
+    \item Does a game engine's runtime have a negative effect on a game engine's performance in comparison to its native performance\footnote{By native we mean the language in it's default runtime, outside of a game engine.}?
     \item In the context of Unity, does the use of a functional language (Clojure) increase execution time?
 \end{itemize}
 
 \subsection{Test cases}
 The test cases were created to explore some different aspects of a gameplay programming language. The test cases are as follows: 
 \begin{description} 
-    \item[Sestoft's multiply] Sestoft's \ttt{multiply}-method is listed in \lstref{sestoft:multiply}. This method is designed to prevent compilers from optimising the multiplication away with a constant value as well as keeping the input relatively small.
+    \item[Sestoft's multiply] Sestoft's \ttt{multiply}-method is listed in \lstref{sestoft:multiply}. This method is designed to prevent compilers from optimising the multiplication away with a constant value as well as keeping the input relatively small. It reflects a minimal computation that still has significant measurable execution time.
     %\item Sum all elements of a matrix
-    \item[Vector math] In this microbenchmark, a series of vector operations was tested; i.e. Scaling a vector by a factor, Multiplying two vectors, translating a vector, subtracting two vectors, calculating the length of a vector, calculating dot product of two vectors.
+    \item[Vector math] In this microbenchmark, a series of vector operations were tested; i.e. scaling a vector by a factor, multiplying two vectors, translating a vector, subtracting two vectors, calculating the length of a vector and calculating dot product of two vectors. This is done for vectors of two and three dimensions.
     \item[Array Allocation] In Array Allocation an array of 100,000 elements should be allocated and initialised to 0 and the last element returned.
     \item[Primes100] In Primes100 the Sieve of Eratosthenes algorithm\cite{eratosthenes:sieve} should be implemented and generate all prime numbers that are lower than 100. This produces a list of numbers, the last of which are returned from the function. 
     %\item Side-scroller player control code
@@ -24,43 +24,80 @@ private static double multiply(int i) {
 }
 \end{lstlisting}
 
-For the vector calculations, the engines' implementation were used. In order to support the native platforms we chose two vector libraries; \ttt{Boost} for C++ \cite{cpp:vector} and \ttt{System.Numerics} for C\# \cite{system:numerics:vectors}. The reason for choosing Boost for C++ is that it is widely used, for instance in Unreal Engine's own vector implementation. Another viable option was to use Lumberyard's vector implementation \cite{lumberyard:vector}, which is also open source. For C\# we chose to use \ttt{System.Numerics.Vector<T>} because it is included in the standard library. The \ttt{System.Numerics.Vector<T>} is implemented to use \ac{SIMD} calls to improve performance \cite{msdn:vectors}.
+For the vector calculations, the engines' implementations were used. In order to support the native platforms we chose two vector libraries; \ttt{Boost} for C++ \cite{cpp:vector} and \ttt{System.Numerics} for C\# \cite{system:numerics:vectors}. The reason for choosing Boost for C++ is that it is widely used, for instance in Unreal Engine's own vector implementation. Another viable option was to use Lumberyard's vector implementation \cite{lumberyard:vector}, which is also open source. For C\# we chose to use \ttt{System.Numerics.Vector<T>} because it is included in the standard library. The \ttt{System.Numerics.Vector<T>} is implemented to use \ac{SIMD} calls to improve performance \cite{msdn:vectors}.
 
 \subsection{Results}
-In this section the results of the test cases are shown and discussed. The most prominent results have been selected and listed in \tableref{benchmark:release-results}, \figureref{scale2d-res} and \figureref{mem-test-res}. The results from all tests may be found in \appendixref{benchmark-res}. All tests results are listed as mean running time in nanoseconds and the graphs use logarithmic scale on the y-axis, as the running times vary wildly between the platforms. 
+In this section the results of the test cases are shown and discussed. We do so on the basis of the research questions that were presented in the start of the section. The results from all tests may be found in \appendixref{benchmark-res}. All tests results are listed as mean running time in nanoseconds and the graphs use logarithmic scale on the y-axis, as the running times vary wildly between the platforms. In all cases We have chosen to rule out the run times longer than 250 nanoseconds, as the higher execution time would make it harder to comprehend the graphs. The result data without the 250 nanosecond roof can be seen in \appendixref{benchmark-res}.
 
-\textbf{\begin{table}[H]
+\subsubsection{Are compiled languages faster than \ac{JIT}-compiled languages?}
+In the exploration of this research question, we compare the results from Microsoft's Visual C++, \ac{GCC} C++, Mono C\# and .NET Core C\#. All the results are listed with the build mode set to Release. 
+
+\benchmarkResOverviewRoofed{Graph over execution times in C++ and C\#}{benchmark:release-results}{
+    \plotData{Dotnet CSharp (release)}{blue}
+    \plotData{Mono CSharp (release)}{red}
+    \plotData{Visual C++ (release)}{violet}
+    \plotData{GCC C++ (release)}{green}
+}
+
+The first thing to note from the results listed in \figureref{benchmark:release-results} is that Visual C++ in all cases, but Array Allocation, is the slowest language. Interestingly, .NET Core is the fastest in all the cases apart from Array Allocation. In the Translate test case for both 2D and 3D vectors, \ac{GCC} C++ and .NET Core achieves more or less the same execution time. The two C++ compilers vary over the test cases in which of them achieves the fastest execution time, but generally speaking, C++ is more stable in it's execution time, whereas C\# has larger variation in it's run times.
+
+From the results found in this test, it would seem that the claim that compiled languages are faster than \ac{JIT}-compiled languages is not true in all cases. These results suggest that it depends on the implementation of the \ac{JIT}-compiler and language runtime. The results from this experiment indicate that \ac{JIT}-compiled languages are better suited for game development related tasks (vector math), where as compiled languages fare better in numerical tasks (Primes100).
+
+\subsubsection{Does a game engine's runtime have a negative effect on a game engine's performance in comparison to its native performance}
+In order to test this research question, we compare the execution times of microbenchmarks in C\# and C++ in different game engines. All the results, except from CryEngine C\# and Unreal Engine, are listed with build mode set to release. The results are illustrated in \figureref{gameengines:cs} for C\# and \figureref{gameengines:cpp}.
+\iffalse \begin{table}[H]
     \sisetup{round-mode=places}
     \rowcolors{1}{}{lightgray}
     \makebox[\textwidth][c]{
-    \begin{tabular}{| P{2.2cm} | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] |}
+    \begin{tabular}{| P{2.2cm} | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] | S[round-precision=2] |}
         \hline
-        \textbf{Test case} & \textbf{Dotnet} & \textbf{Mono} & \textbf{Unity} & \textbf{C++}
+        \textbf{Test case} & \textbf{Dotnet} & \textbf{Mono} & \textbf{Unity} & \textbf{Godot} & \textbf{CryEngine}
         \csvreader[head to column names]{benchmark-tab.csv}
-        {1=\cases, 5=\dotnet, 7=\mono, 3=\unity, 13=\godot, 12=\cpp} % <Column number>=<Macro>
-        {\\\hline \cases & \dotnet & \mono & \unity & \cpp}
+        {1=\cases, 5=\dotnet, 9=\mono, 12=\unity, 8=\godot, 2=\crycs} % <Column number>=<Macro>
+        {\\\hline \cases & \dotnet & \mono & \unity & \godot & \crycs}
         \\ \hline
     \end{tabular}}
-    \caption{Release Benchmark Results, results listed in runtime in nanoseconds}
+    \caption{Benchmark results for C\# over all applicable platforms, results listed in runtime in nanoseconds}
     \label{tab:benchmark:release-results}
-\end{table}}
+\end{table} \fi
 
-\figureref{scale3d-res} was selected as an example of how the running times are distributed over the platforms. The first thing to notice is that in most cases the running time decreases drastically from running in debug/editor-mode versus running in release-mode. This was, however, not the case for Mono, Godot and to some extent Unity. Taking into account that both Godot and Unity runs on the mono platform, it is not strange that their performance reflect that of Mono. It seems, comparing Mono with Dotnet, that Mono fails to optimise the code as much for release builds.
+\benchmarkResOverviewRoofed{Graph over execution times for C\# in different game engines}{gameengines:cs}{
+    \plotData{Cry CSharp (editor)}{blue}
+    \plotData{Dotnet CSharp (release)}{red}
+    \plotData{Godot CSharp (release)}{violet}
+    \plotData{Mono CSharp (release)}{green}
+    \plotData{Unity CSharp (release)}{orange}
+}
+\benchmarkResOverview{Graph over execution times for C++ in different game engines}{gameengines:cpp}{
+    \plotData{Cry C++ (standalone)}{blue}
+    \plotData{Unreal C++ (editor)}{red}
+    \plotData{Visual C++ (release)}{violet}
+    \plotData{GCC C++ (release)}{green}
+}
 
-\figureref{mem-test-res} shows the results from Array Allocation. The next thing to notice is that native C++, in all cases but Array Allocation, runs slower that both Dotnet and Mono.  But that can be attributed to the fact that it was run under \ac{WSL}. This is especially true, as Unreal Engine ranks as the most performant of all competitors in the debug-category.
-%Unreal Engine does not compete in the release-category, as we did not succeed in neither running, nor outputting running times after building the project in release-mode.
+The results for C\#, illustrated in \figureref{gameengines:cs}, show that Unity and Mono lie within the same range, with Unity sometimes being a bit faster than Mono and sometimes vice versa. It seems that the execution times incur an extra overhead for both CryEngine and Godot.
 
-\benchmarkRes{Scale Vector 3D}{scale3d-res}
+In the case of C++ (see \figureref{gameengines:cpp}), CryEngine lie well above all other C++ platforms in all cases. However, Unreal Engine actually achieve the fastest execution times of all the C++ platforms in this experiment.
 
-Among the game engines Unreal Engine ranks the highest - it even ranks higher in debug-mode than all the other engines do in release-mode. This could indicate that either there is some truth to the common belief that C++ is the fastest language for game development or that Unreal Engine's C++ implementation is far better optimised than any other platform in this experiment. 
-One thing to notice, however, is that Unreal Engine fails to optimise the Array Allocation, which was the case for both Visual C++ and \ac{GCC} C++.
+These results suggest that game engines may have a negative effect on a language's performance. This is illustrated by the increased execution times for C\# in Godot and CryEngine compared to Unity (all of which run on the Mono platform). Similarly for C++ CryEngine lie well above all other C++ compilers.
 
-\benchmarkRes{Array Allocation}{mem-test-res}
+\subsubsection{In the context of Unity, does the use of a functional language increase execution time?} \label{sec:functional-overhead}
+This research question is explored by comparing the execution times of Mono C\# and Arcadia in the Unity Editor. As we were unable to build a release version of the Arcadia microbenchmarks, the results for both Arcadia and Mono C\# are from the Editor build mode.
 
-The performance benchmarks was only run once for each platform, but the design of the benchmark takes this into account by running each test multiple times.
+\benchmarkResOverview{Graph over execution times for Mono C\# and Clojure in Unity}{unity:functional}{
+    \plotData{Unity CSharp (editor)}{blue}
+    \plotData{Arcadia}{red}
+}
+
+The results, illustrated in \figureref{unity:functional}, show that Arcadia in all cases have slower execution time than C\#. In fact, over the problems shown in this graph, Arcadia executes 78.2 times slower than C\# on average. We speculate that this is not because Clojure is a functional language, but partly because the microbenchmarks were implemented in an imperative manner and because it is executed on a platform for which it was not intended. 
+
+\subsubsection{Array Allocation Test}
+In this section we explore the execution times in the Array Allocation test. The results are illustrated in \figureref{array-allocation}. The first thing to note is that \ac{GCC} C++ and Unreal Engine execute the fastest, on average around 4500 times as fast as the others (excluding Arcadia). This is a strong indication that Unreal's C++ compiler and \ac{GCC} has optimised the allocation away because it has discovered that it can be replaced with a constant, namely the value of the last element of the array. In all other cases C\# is a bit faster than C++ and Arcadia is once again the slowest. 
+
+\benchmarkRes{Array Allocation}{array-allocation}
 
 \subsection{Threats to Validity} \label{sec:micro:threats}
-In this section the methods used to obtain the results and the results themselves are examined to uncover potential threats to validity. We will examine the internal and external validity of the results; where the internal validity can summarised as whether the tests measure what it is intended to measure. The external validity is whether the utilised test cases apply to other cases in the field.
+In this section the methods used to obtain the results and the results themselves are examined to uncover potential threats to validity. We will examine the internal and external validity of the results; where the internal validity can be summarised as whether the tests measure what it is intended to measure. The external validity is whether the utilised test cases apply to other cases in the field.\needcite
 
 \subsubsection{Internal Validity}
 The major threats to the internal validity is that many compilers perform some optimisation of code regardless of optimisation settings. An example of this is the C function in \lstref{bad-c}. The compiler will instead replace all calls to this function with the literal four. This removes a function call and is desirable for programs in general, but not benchmarks. It is vital that the benchmark does not take shortcuts when running, otherwise results are skewed.
@@ -75,13 +112,15 @@ In order to deal with the internal threats we have examined our results and look
 
 \begin{description}
     \item[\textbf{Array Allocation}]
-    C\# is a managed language which means that it is impossible to allocate an array without also initialising each element in the array. In C++ it is possible to allocate an array without initialising each element and also possible to initialise each element. To make the compared functions more similar, we chose to initialise the array in both C\# and C++. It can be argued that in C++, it will not always make sense to initialise each element, but as there also are many cases where initialising each element would be most sensible. Another test could be added to compare C++ with uninitialised arrays against C\# to examine the effect of that.
+    C\# is a managed language which means that it is impossible to allocate an array without also initialising each element in the array. In C++ it is possible to allocate an array without initialising each element and also possible to initialise each element. To make the compared functions more similar, we chose to initialise the array in both C\# and C++. It can be argued that in C++, it will not always make sense to initialise each element, but there are also many cases where initialising each element would be most sensible. Another test could be added to compare C++ with uninitialised arrays against C\# to examine the effect of that.
     \item[\textbf{Windows Subsystem for Linux}]
-    All the benchmarks are run on the same computer and in the same \ac{OS}, however, as \ac{GCC} is not implemented on Windows, \ac{WSL} was used. Initially we where worried that this would incur a significant overhead that might skew results, however, research showed that \ac{WSL} performs almost as well as bare metal Linux distributions \cite{phoronix:wslperformance}. The only significant difference was \ac{I/O} which is not used during the micro-benchmarks themselves.
+    All the benchmarks are run on the same computer and in the same \ac{OS}, however, as \ac{GCC} is not properly supported on Windows, \ac{WSL} was used. Initially we where worried that this would incur a significant overhead that might skew results, however, research showed that \ac{WSL} performs almost as well as bare metal Linux distributions \cite{phoronix:wslperformance}. The only significant difference was \ac{I/O} which is not used during the microbenchmarks themselves.
     \item[\textbf{Skill Level}]
-    The tests were implemented by the authors of this report, who have different experience levels with the languages. All authors have experience with C\#, but few have C++ experience. This has effected test implementation time and may have effected the efficacy of the tests themselves. To mitigate this, we have used online resources and followed best practice.
+    The tests were implemented by the authors of this report, who have different experience levels with the languages. All authors have experience with C\#, but few have C++ experience. This has effected test implementation time and may have effected the efficacy\tmc{Is efficacy the right word here?} of the tests themselves. To mitigate this, we have used online resources and followed best practice.
 \end{description}
 
 \subsubsection{External Validity}
-The primary external threat is whether the selected test cases are properly selected. If the tests are improperly selected they may not be representative of actual game engine workloads or maybe the test cases are local maxima or minima. Internal threats can in this case be examined and determined to be correct or incorrect, however, this is not the case for the external threats. It is very difficult to prove the non-existence of local maxima and minima\btc{??}.\todo{Discuss validity of test selection}
+The primary external threat is whether the selected test cases are properly selected. If the tests are improperly selected they may not be representative of actual game engine workloads or maybe the test cases are local maxima or minima. Internal threats can in this case be examined and determined to be correct or incorrect, however, this is not the case for the external threats.
+
+Proving that our tests are not best or worst case examples is difficult. Instead the argument for the validity of our test cases is their similarity with actual game development code. A considerable threat to this assumption is that our knowledge about game development is limited outside of the Unity game engine. Furthermore, our experiences developing games, as students and enthusiasts, may not reflect the industry experience and practice.
 

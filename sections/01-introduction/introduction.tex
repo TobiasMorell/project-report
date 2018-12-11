@@ -1,16 +1,11 @@
 \chapter{Introduction}
 Game development is a large industry that is continually growing \cite{newzoo-games-market}.  However, game development is very costly and has grown very complex over the years \cite{blow2004game}. Games are required to simulate physics, render video, play audio and responsively react to player input. Furthermore, all these tasks must be completed fast enough that players are not inconvenienced. In the case of graphics rendering, at least 60 \ac{FPS} are expected to be rendered per second \cite{blow2004game}.
 
-This task is, however, often handled by a game engine through a series of calls to an underlying rendering API \cite{ampatzoglou2007evaluation}. This frees up developers for the implementation of the actual game. The downsides of this approach is that game architecture will be dependent on the engine's architecture. Game engines used to be specialised to certain game genres, but recent engines are becoming more general purpose \cite{messaoudi2015dissecting}. This means that games may be bundled with dead code from the engine, unless the game engine supports code stripping. Furthermore, modern engines are so complex we find that learning to use one is akin to learning a new programming language.
-
-%The complexity of game development and the inflexibility of game engines present a potential niche that this report will further investigate \todo{Bent skriver at dette ikke passer med vores problem formulering}.
+This task is, however, often handled by a game engine through a series of calls to an underlying rendering API \cite{ampatzoglou2007evaluation}. This frees up developer time, allowing them to focus on game behaviour. The downsides of this approach is that game architecture will be dependent on the engine's architecture. Game engines used to be specialised to certain game genres, but recent engines are becoming more general purpose \cite{messaoudi2015dissecting}. This means that games may be bundled with dead code from the engine, unless the game engine supports code stripping. 
 
 The complexity of game development and the inflexibility of game engines present a potential niche for improvement. 
-We can see that there are developers that have tried to create better performing programming languages, making use of macros to optimise the game engine\cite{blowProgrammingLanguage}. This opens up for the use of meta-programming in game development, and how that can be used to optimise game development.
+We can see that there are developers that have tried to create better performing programming languages, making use of macros to optimise the game engine \cite{blowProgrammingLanguage}. This opens up for the use of meta-programming in game development, and how that can be used to optimise game development.
 
-%\todo[inline]{Vil gerne have en lidt mere blød intro til meta-programmering, men kan ikke helt finde grunden tror bare jeg ikke lige ved nok omkring jai, til at give nogle kilder til at give en ordenlig præsentation af meta-programmering}
+Famous game engine developers have called for improvements for C++, the most used language in game development \cite{gamasutra:mostUsedProgrammingLanguage}. The game developers argue that a shift towards the functional  paradigm would be beneficial for game development \cite{gamasutra:c++functional, theNextMainstreanProgrammingLanguage}.
 
-Famous game engine developers have called for improvements in C++, the most used language in game development\cite{gamasutra:mostUsedProgrammingLanguage}, specifically a shift towards the functional  paradigm\cite{gamasutra:c++functional, theNextMainstreanProgrammingLanguage}, this is the case for C++ and game development.
-
-%\input{sections/01-introduction/initial-problem.tex}
 \input{sections/01-introduction/problem-statement.tex}
